@@ -53,7 +53,7 @@
 	<microenvironment_setup>
 		<variable name="nutrient" units="dimensionless" ID="0">
         <physical_parameter_set>
-          <diffusion_coefficient units="micron^2/min">10</diffusion_coefficient>
+          <diffusion_coefficient units="micron^2/min">1</diffusion_coefficient>
           <decay_rate units="1/min">0</decay_rate>
         </physical_parameter_set>
         <initial_condition units="mmHg">0.0</initial_condition>
@@ -136,11 +136,11 @@
           </volume>
 
           <mechanics>
-            <cell_cell_adhesion_strength units="micron/min">0.4</cell_cell_adhesion_strength>
+            <cell_cell_adhesion_strength units="micron/min">2</cell_cell_adhesion_strength>
             <cell_cell_repulsion_strength units="micron/min">10</cell_cell_repulsion_strength> <!-- 10-->
             <relative_maximum_adhesion_distance units="dimensionless">1.25</relative_maximum_adhesion_distance>
             <cell_adhesion_affinities>
-                <cell_adhesion_affinity name="cell">0.5</cell_adhesion_affinity>
+                <cell_adhesion_affinity name="cell">0.2</cell_adhesion_affinity>
                 <cell_adhesion_affinity name="ecm">1.0</cell_adhesion_affinity>
                 </cell_adhesion_affinities>
             <options>
@@ -157,7 +157,7 @@
           <motility>
             <speed units="micron/min">1</speed>
             <persistence_time units="min">10</persistence_time>
-            <migration_bias units="dimensionless">0.5</migration_bias>
+            <migration_bias units="dimensionless">0.6</migration_bias>
             <options>
               <enabled>true</enabled>
               <use_2D>true</use_2D>
@@ -180,7 +180,7 @@
             <substrate name="nutrient">
               <secretion_rate units="1/min">0</secretion_rate>
               <secretion_target units="substrate density">1</secretion_target>
-              <uptake_rate units="1/min">0.001</uptake_rate>
+              <uptake_rate units="1/min">1e-4</uptake_rate>
               <net_export_rate units="total substrate/min">0</net_export_rate>
             </substrate>
             </secretion>
@@ -285,7 +285,7 @@
           </volume>
 
           <mechanics>
-            <cell_cell_adhesion_strength units="micron/min">2</cell_cell_adhesion_strength>
+            <cell_cell_adhesion_strength units="micron/min">0.4</cell_cell_adhesion_strength>
             <cell_cell_repulsion_strength units="micron/min">10.0</cell_cell_repulsion_strength>
             <relative_maximum_adhesion_distance units="dimensionless">1.25</relative_maximum_adhesion_distance>
             <cell_adhesion_affinities>
