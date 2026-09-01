@@ -67,7 +67,7 @@
           <boundary_value ID="zmax" enabled="False">0</boundary_value>
         </Dirichlet_options>
       </variable>
-
+      
       <options>
 			<calculate_gradients>true</calculate_gradients>
 			<track_internalized_substrates_in_each_agent>true</track_internalized_substrates_in_each_agent>
@@ -285,7 +285,7 @@
           </volume>
 
           <mechanics>
-            <cell_cell_adhesion_strength units="micron/min">0.4</cell_cell_adhesion_strength>
+            <cell_cell_adhesion_strength units="micron/min">2</cell_cell_adhesion_strength>
             <cell_cell_repulsion_strength units="micron/min">10.0</cell_cell_repulsion_strength>
             <relative_maximum_adhesion_distance units="dimensionless">1.25</relative_maximum_adhesion_distance>
             <cell_adhesion_affinities>
@@ -332,6 +332,7 @@
               <uptake_rate units="1/min">0</uptake_rate>
               <net_export_rate units="total substrate/min">0</net_export_rate>
             </substrate>
+            </secretion>
 
           <cell_interactions>
             <dead_phagocytosis_rate units="1/min">0.0</dead_phagocytosis_rate>
