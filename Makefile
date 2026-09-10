@@ -1,5 +1,5 @@
 VERSION := $(shell grep . VERSION.txt | cut -f1 -d:)
-PROGRAM_NAME := project
+PROGRAM_NAME := p
 
 CC := g++
 # CC := g++-mp-7 # typical macports compiler name
@@ -218,6 +218,13 @@ data-cleanup:
 	rm -rf ./output
 	mkdir ./output
 	touch ./output/empty.txt
+
+
+r: # NEW, was refresh
+	make reset 
+	make data-cleanup
+	make tcell-project
+
 	
 # archival 
 	
@@ -258,8 +265,14 @@ jpeg:
 	@magick mogrify -format jpg -resize $$(grep . __resize.txt) $(OUTPUT)/s*.svg
 	rm -f __H*.txt __W*.txt __resize.txt 
 	
-gif: 
-	magick convert $(OUTPUT)/s*.svg $(OUTPUT)/out.gif 
+#gif: 
+#	magick convert $(OUTPUT)/s*.svg $(OUTPUT)/out.gif 
+gif: # NEW
+	magick mogrify -path ./output -format jpg ./output/snapshot*.svg
+	magick ./output/snapshot*.jpg animation.gif
+#cp ./output/snapshot*.svg .
+#magick mogrify -format jpg snapshot*.svg
+#magick snapshot*.jpg ./output/animation.gif
 	 
 movie:
 	ffmpeg -r $(FRAMERATE) -f image2 -i $(OUTPUT)/snapshot%08d.jpg -vcodec libx264 -pix_fmt yuv420p -strict -2 -tune animation -crf 15 -acodec none $(OUTPUT)/out.mp4
