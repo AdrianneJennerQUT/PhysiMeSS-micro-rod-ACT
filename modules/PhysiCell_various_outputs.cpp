@@ -161,6 +161,13 @@ void display_simulation_status( std::ostream& os )
 	os << "total wall time: "; 
 	BioFVM::RUNTIME_TOC();
 	BioFVM::display_stopwatch_value( os , BioFVM::runtime_stopwatch_value() ); 
+
+	double progress = PhysiCell_globals.current_time / PhysiCell_settings.max_time;
+	double elapsed_time = BioFVM::runtime_stopwatch_value();
+	double estimated_remaining_time = elapsed_time / progress - elapsed_time;
+	os << "\nestimated remaining time: ";
+	BioFVM::display_stopwatch_value( os , estimated_remaining_time );
+
 	os << std::endl << std::endl; 
 	
 	return;
