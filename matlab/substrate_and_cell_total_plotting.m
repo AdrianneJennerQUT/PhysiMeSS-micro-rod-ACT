@@ -42,6 +42,10 @@ ActiveT_all = zeros(timetotal,1);
 IL2_mass = zeros(timetotal,1);
 t_contact_time = 0;
 
+avgdist_cells = zeros(timetotal,1); % average distance to closest neighbour
+avgdist_rods = zeros(timetotal,1);
+avgdist_both = zeros(timetotal,1);
+
 % opening a video
 if plot_IL2_2D
     v = VideoWriter('video1.avi');
@@ -91,6 +95,45 @@ for tcount = 1:timetotal
     t_contact_time = contact_time(T_c);
 
 
+    % Measure clustering
+    agent_pos = MCDS.discrete_cells.state.position(:,1:2);
+    for i = 1:length(types)
+        closest_cells = Inf;
+        closest_rods = Inf;
+        closest_both = Inf;
+        for j = [1:i-1 i+1:length(types)] % for each pair of agents (except agent i)
+            curr_dist = norm(agent_pos(i,:)-agent_pos(j,:)); % current distance between both agents
+            if types(i) == types(j) % the pair are both T cells or both rods
+                if types(i) == 0 % both T cells
+                    %avgdist_cells(tcount) = avgdist_cells(tcount) + curr_dist; % increment distance
+                    if curr_dist < closest_cells % current distance is closer than the prev closest
+                        closest_cells = curr_dist;
+                    end
+                else % both rod cells
+                    %avgdist_rods(tcount) = avgdist_rods(tcount) + curr_dist; % increment distance
+                    if curr_dist < closest_rods % current distance is closer than the prev closest
+                        closest_rods = curr_dist;
+                    end
+                end
+            end
+            %avgdist_both(tcount) = avgdist_both(tcount) + curr_dist; % regardless of agent type, increment distance
+            if curr_dist < closest_both % current distance is closer than the prev closest
+                closest_both = curr_dist;
+            end
+        end
+        if types(i) == 0
+            avgdist_cells(tcount) = avgdist_cells(tcount) + closest_cells; % add closest distance to current timestep
+        end
+        if types(i) == 1
+            avgdist_rods(tcount) = avgdist_rods(tcount) + closest_rods;
+        end
+        avgdist_both(tcount) = avgdist_both(tcount) + closest_both;
+    end
+    avgdist_cells(tcount) = avgdist_cells(tcount)/sum(types==0); % average the results
+    avgdist_rods(tcount) = avgdist_rods(tcount)/sum(types==1);
+    avgdist_both(tcount) = avgdist_both(tcount)/length(types);
+
+
     %plotting contour plot of substrate
     if plot_IL2_2D
         contourf( MCDS.mesh.X(:,:,k), MCDS.mesh.Y(:,:,k), ...
@@ -105,6 +148,8 @@ for tcount = 1:timetotal
         frame = getframe(gcf);
         writeVideo(v,frame);
     end
+
+    fprintf('%f%% completed.', round(tcount/timetotal*100,2))
 
 end
 
@@ -159,3 +204,72 @@ xline(720)
 xlabel('Contact time')
 ylabel('Number of T cells')
 title('Total contact time of T cells with micro-rods')
+
+% Clustering plots
+figure 
+plot(linspace(0,simulation_time,timetotal),avgdist_cells, 'LineWidth',2)
+hold on
+plot(linspace(0,simulation_time,timetotal),avgdist_rods, 'LineWidth',2)
+hold on
+plot(linspace(0,simulation_time,timetotal),avgdist_both, 'LineWidth',2)
+xlabel('Time (days)')
+ylabel('Average distance to nearest neighbour')
+legend('T cells', 'Rods', 'Both', 'Location','best')
+set(gca,'FontSize',18)
+
+
+
+
+
+
+%% testing rod position and rotation
+
+agent_pos = MCDS.discrete_cells.state.position(:,1:2);
+
+cell_pos = agent_pos(types==0,:);
+
+rod_pos = agent_pos(types==1,:);
+rod_rot = MCDS.discrete_cells.state.orientation(types==1,:);
+
+scatter(cell_pos(:,1), cell_pos(:,2))
+hold on
+scatter(rod_pos(:,1), rod_pos(:,2), color="red")
+
+avgdist_cells = 0;
+avgdist_rods = 0;
+avgdist_both = 0;
+for i = 1:length(types)
+    closest_cells = Inf;
+    closest_rods = Inf;
+    closest_both = Inf;
+    for j = [1:i-1 i+1:length(types)] % for each pair of agents (except agent i)
+        curr_dist = norm(agent_pos(i,:)-agent_pos(j,:)); % current distance between both agents
+        if types(i) == types(j) % the pair are both T cells or both rods
+            if types(i) == 0 % both T cells
+                %avgdist_cells(tcount) = avgdist_cells(tcount) + curr_dist; % increment distance
+                if curr_dist < closest_cells % current distance is closer than the prev closest
+                    closest_cells = curr_dist;
+                end
+            else % both rod cells
+                %avgdist_rods(tcount) = avgdist_rods(tcount) + curr_dist; % increment distance
+                if curr_dist < closest_rods % current distance is closer than the prev closest
+                    closest_rods = curr_dist;
+                end
+            end
+        end
+        %avgdist_both(tcount) = avgdist_both(tcount) + curr_dist; % regardless of agent type, increment distance
+        if curr_dist < closest_both % current distance is closer than the prev closest
+            closest_both = curr_dist;
+        end
+    end
+    if types(i) == 0
+        avgdist_cells = avgdist_cells + closest_cells; % add closest distance to current timestep
+    end
+    if types(i) == 1
+        avgdist_rods = avgdist_rods + closest_rods;
+    end
+    avgdist_both = avgdist_both + closest_both;
+end
+avgdist_cells = avgdist_cells/sum(types==0); % average the results
+avgdist_rods = avgdist_rods/sum(types==1);
+avgdist_both = avgdist_both/length(types);
