@@ -198,6 +198,17 @@ physimess-sample:
 	cp -r ./sample_projects/physimess/config/* ./config/
 
 
+tcell-project: # NEW
+	cp ./sample_projects/physimess/custom_modules/* ./custom_modules/
+	touch main.cpp && cp main.cpp main-backup.cpp
+	cp ./sample_projects/physimess/main.cpp ./main.cpp 
+	cp Makefile Makefile-backup
+	cp ./sample_projects/physimess/Makefile .
+	cp ./config/PhysiCell_settings.xml ./config/PhysiCell_settings-backup.xml 
+	cp -r ./sample_projects/physimess/config/* ./config/
+	make 
+
+
 custom-division-sample:
 	cp ./sample_projects/custom_division/custom_modules/* ./custom_modules/
 	touch main.cpp && cp main.cpp main-backup.cpp
@@ -415,6 +426,11 @@ data-cleanup:
 	rm -rf ./output
 	mkdir ./output
 	touch ./output/empty.txt
+
+
+r: # NEW, was refresh
+	make reset 
+	make tcell-project
 
 # archival 
 
