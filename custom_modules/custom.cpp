@@ -67,6 +67,10 @@
 
 #include "./custom.h"
 
+// #define _USE_MATH_DEFINES
+// #include <math.h>
+# define M_PI  3.14159265358979323846  // pi
+
 
 
 void create_cell_types( void )
@@ -347,9 +351,12 @@ void fibre_time_secretion_function( Cell* pCell, Phenotype& phenotype, double dt
 
     double t = PhysiCell_globals.current_time;
 
-    double v   = 2.29e-3;//4
-    double q   = 6.2;
-    double rho = 1.421e-7;//9
+    double v   = parameters.doubles("v"); 
+    double q   = parameters.doubles("q");
+
+    static double rod_length = pCell->custom_data["fibre_length"];
+    static double rod_radius = pCell->custom_data["fibre_radius"];
+    double rho = parameters.doubles("rod_mass")/(rod_length*M_PI*rod_radius*rod_radius); // mass density of a single rod (ug/um^3) 
 
     phenotype.secretion.secretion_rates[substrate_index] = v*q*rho*exp(-v*t);
     return;
@@ -389,7 +396,7 @@ void cell_proliferation_based_on_IL2( Cell* pCell , Phenotype& phenotype, double
 	double IL2 = pCell->nearest_density_vector()[IL2_index];
 
 	double rPmax = parameters.doubles("rPmax");
-	double IP    = parameters.doubles("IP");
+	double IP    = parameters.doubles("IP")/(microenvironment.mesh.bounding_box[5]-microenvironment.mesh.bounding_box[2]); // divide by width in z direction to get volumetric density
 
 	phenotype.cycle.data.transition_rate( cycle_start_index, cycle_end_index ) = rPmax*IL2/(IP+IL2);
 	
