@@ -87,7 +87,7 @@ void create_cell_types( void )
 	   
 	   This is a good place to set default functions. 
 	*/ 
-	
+
 	initialize_default_cell_definition(); 
 	cell_defaults.phenotype.secretion.sync_to_microenvironment( &microenvironment ); 
 
@@ -165,6 +165,31 @@ void create_cell_types( void )
 void setup_microenvironment( void )
 {
 	// set domain parameters 
+
+    // code to compute x_max, y_max, and number_of_fibres from Brynn's digitised scaffold 
+    microenvironment.mesh.bounding_box[0] = 0; microenvironment.mesh.bounding_box[3] = 800; // retrieve x_max and y_max based on Brynn's digitised scaffold
+    microenvironment.mesh.bounding_box[1] = 0; microenvironment.mesh.bounding_box[4] = 800;
+    double Xmax = microenvironment.mesh.bounding_box[3]; double Ymax = microenvironment.mesh.bounding_box[4]; 
+    default_microenvironment_options.X_range = {0, Xmax}; // assign the max values to the range
+    default_microenvironment_options.Y_range = {0, Ymax}; 
+
+    parameters.ints("number_of_fibres") = 400; // retrieve number of rods from Brynn's digitised scaffold
+    parameters.doubles("rod_mass") = 2*M_PI*parameters.doubles("rod_radius")*(parameters.doubles("rod_radius")+parameters.doubles("rod_length"))/parameters.doubles("rod_surface_area_ratio"); // compute mass of individual rod by dividing the average surface area by the ratio of surface area to mass
+    std::cout<< "Individual rod mass: " << parameters.doubles("rod_mass") <<std::endl;
+
+    parameters.doubles("scaling_factor") = parameters.doubles("tot_rod_mass")/(parameters.ints("number_of_fibres")*parameters.doubles("rod_mass")); // compute scaling factor by comparing mass of rods in domain to total number of rods used in experiments
+    std::cout<< "Scaling factor: " << parameters.doubles("scaling_factor") <<std::endl;
+
+    microenvironment.mesh.bounding_box[2] = 0; microenvironment.mesh.bounding_box[5] = parameters.doubles("exp_vol")/(Xmax*Ymax*parameters.doubles("scaling_factor")); // compute scaling in z direction by comparing simulation domain to scaling factor
+    double Zmax = microenvironment.mesh.bounding_box[5]; 
+    default_microenvironment_options.dz = Zmax; 
+    std::cout<< "z_max: " << Zmax <<std::endl;
+
+    //parameters.doubles("scaling_factor") = parameters.doubles("exp_vol")/(Xmax*Ymax*Zmax); // compute scaling factor as the number of our simulation domains to represent the full experimental volume
+    parameters.ints("number_of_cells") = parameters.doubles("exp_cells")/parameters.doubles("scaling_factor"); // scale the experimental cell count using scaling factor, rounds down to nearest int
+    std::cout<< "Number of cells (before rounding): " << parameters.doubles("exp_cells")/parameters.doubles("scaling_factor") <<std::endl;
+    if (parameters.ints("number_of_cells") == 0){ parameters.ints("number_of_cells") = 1; } // make sure there is at least one cell
+
 	
 	// put any custom code to set non-homogeneous initial conditions or 
 	// extra Dirichlet nodes here. 
@@ -441,11 +466,11 @@ void check_cell_contact( Cell* pCell , Phenotype& phenotype, double dt )
             pCell->custom_data[k_touch] = 1.0;
 
             // add that if the cells are in contact, the speed of the T cells slows to almost nothing
-           // pCell->phenotype.motility.migration_speed = 0.05;
+            //pCell->phenotype.motility.migration_speed = 0.05;
 
-          // if (pCell->custom_data[k_state]>0.5)
-           //{  // AJ ADDED - if cell is activated and touching other cells, then slow it down
-             //   pCell->phenotype.motility.migration_speed = 0.1;//}
+            //if (pCell->custom_data[k_state]>0.5) {  // AJ ADDED - if cell is activated and touching other cells, then slow it down
+            //    pCell->phenotype.motility.migration_speed = 0.1;
+            //}
 
             break;
         }
