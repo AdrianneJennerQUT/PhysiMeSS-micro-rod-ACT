@@ -193,10 +193,13 @@ void physimess_mechanics( double dt )
 
 void fibre_agent_SVG(std::ofstream& os, PhysiCell::Cell* pC, double z_slice, std::vector<std::string> (*cell_coloring_function)(Cell*), double X_lower, double Y_lower) {
 
+    
 	// place a rod if it's a fibre (note fibre already renamed here)
 	if (isFibre(pC) ){
     
         PhysiMeSS_Fibre* pFibre = static_cast<PhysiMeSS_Fibre*>(pC);
+
+
 		int crosslinks = pFibre->X_crosslink_count;
         /*if (crosslinks >= 3){
 			// if fibre has cross-links different colour than if not

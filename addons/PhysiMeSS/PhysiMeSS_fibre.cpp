@@ -65,21 +65,35 @@ PhysiMeSS_Fibre::PhysiMeSS_Fibre()
 
 void PhysiMeSS_Fibre::assign_fibre_orientation() 
 { 
-    mLength = PhysiCell::NormalRandom(this->custom_data["fibre_length"], this->custom_data["length_normdist_sd"]) / 2.0;
     mRadius = this->custom_data["fibre_radius"];
-    this->assign_orientation();
+    //this->assign_orientation();
     if (default_microenvironment_options.simulate_2D) {
-        if (this->custom_data["anisotropic_fibres"] > 0.5){
+        if(this->custom_data["loaded_fibres"]>0.5)
+        {
+            // do nothing as orientation should already be assigned
+
+            // load in lengths from data file
+            mLength = this->custom_data["fibre_length"];//PhysiCell::NormalRandom(this->custom_data["fibre_length"], this->custom_data["length_normdist_sd"]) / 2.0;
+            std::cout<<"length in physimess Fibre: "<<mLength<<std::endl;
+        }
+        else if (this->custom_data["anisotropic_fibres"] > 0.5)
+        {
+            mLength = PhysiCell::NormalRandom(this->custom_data["fibre_length"], this->custom_data["length_normdist_sd"]) / 2.0;
+                this->assign_orientation();
             double theta = PhysiCell::NormalRandom(this->custom_data["fibre_angle"], this->custom_data["angle_normdist_sd"]);
             this->state.orientation[0] = cos(theta);
             this->state.orientation[1] = sin(theta);
         }
         else{
+            mLength = PhysiCell::NormalRandom(this->custom_data["fibre_length"], this->custom_data["length_normdist_sd"]) / 2.0;
+            this->assign_orientation();
             this->state.orientation = PhysiCell::UniformOnUnitCircle();
+
         }
         this->state.orientation[2] = 0.0;
     }
     else {
+        mLength = PhysiCell::NormalRandom(this->custom_data["fibre_length"], this->custom_data["length_normdist_sd"]) / 2.0;
         this->state.orientation = PhysiCell::UniformOnUnitSphere();
     }
     //###########################################//
