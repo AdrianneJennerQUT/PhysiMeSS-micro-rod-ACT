@@ -87,7 +87,7 @@ void create_cell_types( void )
 	   
 	   This is a good place to set default functions. 
 	*/ 
-
+	
 	initialize_default_cell_definition(); 
 	cell_defaults.phenotype.secretion.sync_to_microenvironment( &microenvironment ); 
 
@@ -245,12 +245,12 @@ void setup_tissue( void )
                assign fibre orientation and test whether out of bounds */
             isFibreFromFile = true;
 			static_cast<PhysiMeSS_Fibre*>((*all_cells)[i])->assign_fibre_orientation();
-			
         } 
     }
 
     /* agents have not been added from the file but do want them
        create some of each agent type */
+    isFibreFromFile = false;
 
     if(!isFibreFromFile){
         Cell* pC;
@@ -270,12 +270,13 @@ void setup_tissue( void )
                     position[2] = Zmin + UniformRandom() * Zrange;
 
                     pC = create_cell(*pCD);
-                                        
+                                     
+
                     pC->assign_position(position);
                 }
             } 
             
-            else 
+            else if(pC->custom_data["loaded_fibres"]<0.5)  // check if fibres aren't loaded
             {
                 for ( int nf = 0 ; nf < parameters.ints("number_of_fibres") ; nf++ ) {
 
@@ -466,11 +467,11 @@ void check_cell_contact( Cell* pCell , Phenotype& phenotype, double dt )
             pCell->custom_data[k_touch] = 1.0;
 
             // add that if the cells are in contact, the speed of the T cells slows to almost nothing
-            //pCell->phenotype.motility.migration_speed = 0.05;
+           // pCell->phenotype.motility.migration_speed = 0.05;
 
-            //if (pCell->custom_data[k_state]>0.5) {  // AJ ADDED - if cell is activated and touching other cells, then slow it down
-            //    pCell->phenotype.motility.migration_speed = 0.1;
-            //}
+          // if (pCell->custom_data[k_state]>0.5)
+           //{  // AJ ADDED - if cell is activated and touching other cells, then slow it down
+             //   pCell->phenotype.motility.migration_speed = 0.1;//}
 
             break;
         }
