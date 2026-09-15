@@ -311,11 +311,11 @@ void load_cells_csv_v1( std::string filename )
 		std::vector<double> data;
 		csv_to_vector( line.c_str() , data ); 
 
-		if( data.size() != 4 )
+		/*if( data.size() != 4 )
 		{
 			std::cout << "Error! Importing cells from a CSV file expects each row to be x,y,z,typeID." << std::endl;
 			exit(-1);
-		}
+		}*/
 
 		std::vector<double> position = { data[0] , data[1] , data[2] };
 
