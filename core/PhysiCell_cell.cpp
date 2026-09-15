@@ -238,8 +238,6 @@ Cell_State::Cell_State()
 	spring_attachments.resize(0); 
 
 	orientation.resize( 3 , 0.0 ); 
-
-	// AJ ADDED FOR LENGTH TRACKING
 	
 	simple_pressure = 0.0; 
 	
@@ -3482,4 +3480,3 @@ int find_cell_definition_index( int search_type )
 
 
 };
-
