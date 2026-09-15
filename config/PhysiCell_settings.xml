@@ -13,7 +13,7 @@
 	</domain>
 	
 	<overall>
-		<max_time units="min">7500</max_time> <!--5760 = 4days -->
+		<max_time units="min">5760</max_time> <!--5760 = 4days -->
 		<time_units>min</time_units>
 		<space_units>micron</space_units>
 	
@@ -227,7 +227,7 @@
           <cell_velocity_max units="" description="max cell velocity">1.0</cell_velocity_max>
           <touching_rod units="" description="boolean touching rod">0.0</touching_rod>
           <attached_time units="" description="time of attachment">0.0</attached_time>
-          <loaded_fibres conserved="false" units="none" description="flag for when we are loading fibres from csv">1.0</loaded_fibres>
+          <loaded_fibres conserved="false" units="none" description="flag for when we are loading fibres from csv">0.0</loaded_fibres>
           <state units="" description="activation status">0.0</state>
           <fibre_length conserved="false" units="microns" description="length of fibres">70.4</fibre_length>
 
@@ -380,14 +380,14 @@
 	<initial_conditions>
 		<cell_positions type="csv" enabled="true">
 			<folder>./config/Fibre_Initialisation/</folder>
-			<filename>brynn_scaffold_v2.csv</filename>
+			<filename>initial_midpoint.csv</filename><!-- brynn_scaffold_v2 -->
 		</cell_positions>
 	</initial_conditions>	
 	
 	<user_parameters>
         <random_seed type="int" units="dimensionless" description="">0</random_seed>
-        <number_of_cells type="int" units="none" description="initial number of cells (for each cell type)">3</number_of_cells>
-        <number_of_fibres type="int" units="none" description="initial number of fibres (for each fibre type)">3</number_of_fibres>
+        <number_of_cells type="int" units="none" description="initial number of cells (for each cell type)">100</number_of_cells>
+        <number_of_fibres type="int" units="none" description="initial number of fibres (for each fibre type)">300</number_of_fibres>
  
         <tot_rod_mass type="double" units="ug">33.3</tot_rod_mass> <!-- 0.33 or 33.3, total mass of all rods added to culture medium in experiments; Table 7 in Zhang et al. 2020. Compared to the mass of rods in image to determine domain height -->
         <exp_vol type="double" units="um^3">5e11</exp_vol> <!-- volume of culture medium used in experiments; Table 7 in Zhang et al. 2020. Compared to domain volume to determine scaling factor for initial cells (scale down) and results (scale back up) -->
