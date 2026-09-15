@@ -73,7 +73,9 @@ void PhysiMeSS_Fibre::assign_fibre_orientation()
             // do nothing as orientation should already be assigned
 
             // load in lengths from data file
-            mLength = this->custom_data["fibre_length"];//PhysiCell::NormalRandom(this->custom_data["fibre_length"], this->custom_data["length_normdist_sd"]) / 2.0;
+            mLength = this->custom_data["fibre_length"]/2.0;//PhysiCell::NormalRandom(this->custom_data["fibre_length"], this->custom_data["length_normdist_sd"]) / 2.0;
+            //mLength = PhysiCell::NormalRandom(this->custom_data["fibre_length"], this->custom_data["length_normdist_sd"]) / 2.0;
+           
             std::cout<<"length in physimess Fibre: "<<mLength<<std::endl;
         }
         else if (this->custom_data["anisotropic_fibres"] > 0.5)
@@ -99,6 +101,7 @@ void PhysiMeSS_Fibre::assign_fibre_orientation()
     //###########################################//
     //   this bit a hack for PacMan and maze	 //
     //###########################################//
+    /*
     if (this->type_name == "fibre_vertical") {
         this->state.orientation[0] = 0.0;
         this->state.orientation[1] = 1.0;
@@ -109,6 +112,7 @@ void PhysiMeSS_Fibre::assign_fibre_orientation()
         this->state.orientation[1] = 0.0;
         this->state.orientation[2] = 0.0;
     }
+    */
     //###########################################// 
 }
 
