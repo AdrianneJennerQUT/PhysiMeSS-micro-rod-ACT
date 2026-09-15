@@ -165,7 +165,7 @@ void create_cell_types( void )
 void setup_microenvironment( void )
 {
 	// set domain parameters 
-
+/*
     // code to compute x_max, y_max, and number_of_fibres from Brynn's digitised scaffold 
     microenvironment.mesh.bounding_box[0] = 0; microenvironment.mesh.bounding_box[3] = 800; // retrieve x_max and y_max based on Brynn's digitised scaffold
     microenvironment.mesh.bounding_box[1] = 0; microenvironment.mesh.bounding_box[4] = 800;
@@ -190,6 +190,7 @@ void setup_microenvironment( void )
     std::cout<< "Number of cells (before rounding): " << parameters.doubles("exp_cells")/parameters.doubles("scaling_factor") <<std::endl;
     if (parameters.ints("number_of_cells") == 0){ parameters.ints("number_of_cells") = 1; } // make sure there is at least one cell
 
+    */
 	
 	// put any custom code to set non-homogeneous initial conditions or 
 	// extra Dirichlet nodes here. 
@@ -250,7 +251,7 @@ void setup_tissue( void )
 
     /* agents have not been added from the file but do want them
        create some of each agent type */
-    isFibreFromFile = false;
+   // isFibreFromFile = false;
 
     if(!isFibreFromFile){
         Cell* pC;
