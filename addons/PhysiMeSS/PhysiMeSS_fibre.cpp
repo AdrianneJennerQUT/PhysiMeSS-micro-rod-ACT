@@ -74,6 +74,14 @@ void PhysiMeSS_Fibre::assign_fibre_orientation()
             this->state.orientation[0] = cos(theta);
             this->state.orientation[1] = sin(theta);
         }
+        
+        else if(PhysiCell::parameters.doubles("rod_length")>0.5)// this needs to be fixed to be a bool flag for csv loading
+        {
+            std::cout<<"HERE"<<std::endl;
+            this->state.orientation[0] = this->custom_data["individual_orientation_1"];
+            this->state.orientation[1] = this->custom_data["individual_orientation_2"];
+            mLength = this->custom_data["individual_length"]/2;
+        }
         else{
             this->state.orientation = PhysiCell::UniformOnUnitCircle();
         }
@@ -187,9 +195,12 @@ void PhysiMeSS_Fibre::check_out_of_bounds(std::vector<double>& position)
 void PhysiMeSS_Fibre::add_potentials_from_cell(PhysiMeSS_Cell* cell) 
 {
     // fibres only get pushed or rotated by motile cells
-    if (!cell->phenotype.motility.is_motile || X_crosslink_count >= 2) {
+    // ------ AJ MAKING CHANGES HERE TO ALLOW ALL FIBRES TO MOVE -----
+    if (!cell->phenotype.motility.is_motile ){//|| X_crosslink_count >= 2) {
         return;
     }
+
+    //std::cout<<"HERE: "<<cell->position<<std::endl;
 
     double distance = 0.0;
     nearest_point_on_fibre(cell->position, displacement);
@@ -205,7 +216,10 @@ void PhysiMeSS_Fibre::add_potentials_from_cell(PhysiMeSS_Cell* cell)
             point_of_impact[index] = (*cell).position[index] - displacement[index];
         }
         // cell-fibre pushing only if fibre no crosslinks
-        if (X_crosslink_count == 0) {
+        // AJ ---- making changes here to cross linking -----!!!!
+
+        //if (X_crosslink_count == 0) {
+
             //fibre pushing turned on
             if (cell->custom_data["fibre_pushing"] > 0.5) {
                 // as per PhysiCell
@@ -245,7 +259,7 @@ void PhysiMeSS_Fibre::add_potentials_from_cell(PhysiMeSS_Cell* cell)
                 state.orientation[1] = old_orientation[0] * sin(angle) + old_orientation[1] * cos(angle);
                 normalize(&state.orientation);
             }
-        }
+        //}
 
         // fibre rotation around other fibre (2D only and fibres intersect at a single point)
         if (cell->custom_data["fibre_rotation"] > 0.5 && X_crosslink_count == 1) {
