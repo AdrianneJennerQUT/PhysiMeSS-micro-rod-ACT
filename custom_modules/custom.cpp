@@ -87,7 +87,7 @@ void create_cell_types( void )
 	   
 	   This is a good place to set default functions. 
 	*/ 
-	
+
 	initialize_default_cell_definition(); 
 	cell_defaults.phenotype.secretion.sync_to_microenvironment( &microenvironment ); 
 
@@ -165,15 +165,14 @@ void create_cell_types( void )
 void setup_microenvironment( void )
 {
 	// set domain parameters 
-/*
-    // code to compute x_max, y_max, and number_of_fibres from Brynn's digitised scaffold 
-    microenvironment.mesh.bounding_box[0] = 0; microenvironment.mesh.bounding_box[3] = 800; // retrieve x_max and y_max based on Brynn's digitised scaffold
-    microenvironment.mesh.bounding_box[1] = 0; microenvironment.mesh.bounding_box[4] = 800;
-    double Xmax = microenvironment.mesh.bounding_box[3]; double Ymax = microenvironment.mesh.bounding_box[4]; 
-    default_microenvironment_options.X_range = {0, Xmax}; // assign the max values to the range
-    default_microenvironment_options.Y_range = {0, Ymax}; 
 
-    parameters.ints("number_of_fibres") = 400; // retrieve number of rods from Brynn's digitised scaffold
+    // code to compute x_max, y_max, and number_of_fibres from Brynn's digitised scaffold 
+    microenvironment.mesh.bounding_box[0] = 0; microenvironment.mesh.bounding_box[3] = default_microenvironment_options.X_range[1]; // reassign x_max and y_max in here since these default to 0.5 for some reason
+    microenvironment.mesh.bounding_box[1] = 0; microenvironment.mesh.bounding_box[4] = default_microenvironment_options.Y_range[1];
+    double Xmax = microenvironment.mesh.bounding_box[3]; double Ymax = microenvironment.mesh.bounding_box[4]; 
+    std::cout<< "x_max: " << Xmax <<std::endl;
+
+    parameters.ints("number_of_fibres") = 411; // retrieve number of rods from Brynn's digitised scaffold
     parameters.doubles("rod_mass") = 2*M_PI*parameters.doubles("rod_radius")*(parameters.doubles("rod_radius")+parameters.doubles("rod_length"))/parameters.doubles("rod_surface_area_ratio"); // compute mass of individual rod by dividing the average surface area by the ratio of surface area to mass
     std::cout<< "Individual rod mass: " << parameters.doubles("rod_mass") <<std::endl;
 
@@ -190,7 +189,8 @@ void setup_microenvironment( void )
     std::cout<< "Number of cells (before rounding): " << parameters.doubles("exp_cells")/parameters.doubles("scaling_factor") <<std::endl;
     if (parameters.ints("number_of_cells") == 0){ parameters.ints("number_of_cells") = 1; } // make sure there is at least one cell
 
-    */
+    //parameters.ints("number_of_cells") = 100; // hardcode number of initial cells for testing only
+
 	
 	// put any custom code to set non-homogeneous initial conditions or 
 	// extra Dirichlet nodes here. 
@@ -246,12 +246,13 @@ void setup_tissue( void )
                assign fibre orientation and test whether out of bounds */
             isFibreFromFile = true;
 			static_cast<PhysiMeSS_Fibre*>((*all_cells)[i])->assign_fibre_orientation();
+			
         } 
     }
 
     /* agents have not been added from the file but do want them
        create some of each agent type */
-   // isFibreFromFile = false;
+std::cout<<"HERE 2"<<std::endl;
 
     if(!isFibreFromFile){
         Cell* pC;
@@ -271,13 +272,12 @@ void setup_tissue( void )
                     position[2] = Zmin + UniformRandom() * Zrange;
 
                     pC = create_cell(*pCD);
-                                     
-
+                                        
                     pC->assign_position(position);
                 }
             } 
             
-            else if(pC->custom_data["loaded_fibres"]<0.5)  // check if fibres aren't loaded
+            else 
             {
                 for ( int nf = 0 ; nf < parameters.ints("number_of_fibres") ; nf++ ) {
 
@@ -468,11 +468,11 @@ void check_cell_contact( Cell* pCell , Phenotype& phenotype, double dt )
             pCell->custom_data[k_touch] = 1.0;
 
             // add that if the cells are in contact, the speed of the T cells slows to almost nothing
-           // pCell->phenotype.motility.migration_speed = 0.05;
+            //pCell->phenotype.motility.migration_speed = 0.05;
 
-          // if (pCell->custom_data[k_state]>0.5)
-           //{  // AJ ADDED - if cell is activated and touching other cells, then slow it down
-             //   pCell->phenotype.motility.migration_speed = 0.1;//}
+            //if (pCell->custom_data[k_state]>0.5) {  // AJ ADDED - if cell is activated and touching other cells, then slow it down
+            //    pCell->phenotype.motility.migration_speed = 0.1;
+            //}
 
             break;
         }
