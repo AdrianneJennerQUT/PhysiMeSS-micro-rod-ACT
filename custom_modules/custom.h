@@ -85,20 +85,22 @@ void setup_microenvironment( void );
 std::vector<std::string> my_coloring_function( Cell* );
 std::string my_coloring_function_for_substrate( double concentration, double max_conc, double min_conc );
 void my_cellcount_function(char* string);
-std::vector<std::string> paint_by_cell_type_and_state( Cell* pCell );
 
 // custom functions can go here 
 
 void custom_function( Cell* pCell, Phenotype& phenotype, double dt );
 void phenotype_function( Cell* pCell, Phenotype& phenotype, double dt );
 void contact_function( Cell* pMe, Phenotype& phenoMe , Cell* pOther, Phenotype& phenoOther , double dt ); 
-void fibre_time_secretion_function( Cell* pCell, Phenotype& phenotype, double dt );
 
 void cell_proliferation_based_on_IL2( Cell* pCell , Phenotype& phenotype, double dt );
 void check_cell_contact( Cell* pCell , Phenotype& phenotype, double dt );
+void check_for_activation( Cell* pCell , Phenotype& phenotype, double dt );
+
+void fibre_time_secretion_function( Cell* pCell, Phenotype& phenotype, double dt );
+
 void tcell_division_function( Cell* pParent, Cell* pDaughter );
-void clamp_cell_to_domain(Cell* c);
-void my_bulk_supply_rate_function(    BioFVM::Microenvironment* pMicroenvironment,    int voxel_index,    std::vector<double>* write_destination);
+
+std::vector<std::string> paint_by_cell_type_and_state( Cell* pCell );
 
 Cell* instantiate_physimess_cell();
 Cell* instantiate_physimess_fibre();
