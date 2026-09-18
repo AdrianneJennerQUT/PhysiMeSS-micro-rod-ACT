@@ -923,7 +923,6 @@ void Secretion::sync_to_microenvironment( Microenvironment* pNew_Microenvironmen
 
 void Secretion::advance( Basic_Agent* pCell, Phenotype& phenotype , double dt )
 {
-	
 	// if this phenotype is not associated with a cell, exit 
 	if( pCell == NULL )
 	{ return; }
