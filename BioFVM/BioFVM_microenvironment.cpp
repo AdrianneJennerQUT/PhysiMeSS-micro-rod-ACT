@@ -67,7 +67,6 @@ Microenvironment* get_default_microenvironment( void )
 
 void zero_function( std::vector<double>& position, std::vector<double>& input , std::vector<double>* write_destination )
 {
-	//std::cout<<"ZERO FUNCTION 2"<<std::endl;
 	for( unsigned int i=0 ; i < write_destination->size() ; i++ )
 	{ (*write_destination)[i] = 0.0; }
 	return; 
@@ -80,33 +79,13 @@ void one_function( std::vector<double>& position, std::vector<double>& input , s
 	return; 
 }
 
-void zero_function_2( Microenvironment* pMicroenvironment, int voxel_index, std::vector<double>* write_destination, double current_time ) 
-{
-	//std::cout<<"ZERO FUNCTION 2"<<std::endl;
-    double v   = 2.29e-3;//4
-    double q   = 6.2;
-    double rho = 1.421e-7;//9
-
-	//std::cout<<"HERE 2: "<<current_time<<std::endl;
-
-	for( unsigned int i=0 ; i < write_destination->size() ; i++ )
-	{ (*write_destination)[i] = 0;}//v*q*rho*exp(-v*current_time); }
-	return; 
-}
-void zero_function_3( Microenvironment* pMicroenvironment, int voxel_index, std::vector<double>* write_destination) 
-{
-	for( unsigned int i=0 ; i < write_destination->size() ; i++ )
-	{ (*write_destination)[i] = 1; }
-	return; 
-}
 void zero_function( Microenvironment* pMicroenvironment, int voxel_index, std::vector<double>* write_destination ) 
 {
-	//std::cout<<"ZERO FUNCTION"<<std::endl;
-
 	for( unsigned int i=0 ; i < write_destination->size() ; i++ )
 	{ (*write_destination)[i] = 0.0; }
 	return; 
 }
+
 void one_function( Microenvironment* pMicroenvironment, int voxel_index, std::vector<double>* write_destination )
 {
 	for( unsigned int i=0 ; i < write_destination->size() ; i++ )
@@ -156,8 +135,8 @@ Microenvironment::Microenvironment()
 	}
 	gradient_vector_computed.resize( mesh.voxels.size() , false ); 
 
-	bulk_supply_rate_function = zero_function_2; 
-	bulk_supply_target_densities_function = zero_function_3; 
+	bulk_supply_rate_function = zero_function; 
+	bulk_supply_target_densities_function = zero_function; 
 	bulk_uptake_rate_function = zero_function; 
 
 	density_names.assign( 1 , "unnamed" ); 
@@ -749,7 +728,7 @@ void Microenvironment::write_to_matlab( std::string filename )
 
 
 
-void Microenvironment::simulate_bulk_sources_and_sinks( double dt, double current_time )
+void Microenvironment::simulate_bulk_sources_and_sinks( double dt )
 {
 	if( !bulk_source_sink_solver_setup_done )
 	{
@@ -759,13 +738,11 @@ void Microenvironment::simulate_bulk_sources_and_sinks( double dt, double curren
 		
 		bulk_source_sink_solver_setup_done = true; 
 	}
-
-	
 	
 	#pragma omp parallel for
 	for( unsigned int i=0; i < mesh.voxels.size() ; i++ )
 	{
-		bulk_supply_rate_function( this,i, &bulk_source_sink_solver_temp1[i], current_time ); // temp1 = S
+		bulk_supply_rate_function( this,i, &bulk_source_sink_solver_temp1[i] ); // temp1 = S
 		bulk_supply_target_densities_function( this,i, &bulk_source_sink_solver_temp2[i]); // temp2 = T
 		bulk_uptake_rate_function( this,i, &bulk_source_sink_solver_temp3[i] ); // temp3 = U
 
@@ -782,7 +759,7 @@ void Microenvironment::simulate_bulk_sources_and_sinks( double dt, double curren
 	return; 
 }
 
-void Microenvironment::simulate_cell_sources_and_sinks( std::vector<Basic_Agent*>& basic_agent_list , double dt, double current_time )
+void Microenvironment::simulate_cell_sources_and_sinks( std::vector<Basic_Agent*>& basic_agent_list , double dt )
 {
 	#pragma omp parallel for
 	for( unsigned int i=0 ; i < basic_agent_list.size() ; i++ )
@@ -793,12 +770,12 @@ void Microenvironment::simulate_cell_sources_and_sinks( std::vector<Basic_Agent*
 	return; 
 }
 
-void Microenvironment::simulate_cell_sources_and_sinks( double dt, double current_time  )
+void Microenvironment::simulate_cell_sources_and_sinks( double dt )
 {
-	simulate_cell_sources_and_sinks(all_basic_agents, dt, current_time);
+	simulate_cell_sources_and_sinks(all_basic_agents, dt);
 }
 
-void Microenvironment::update_rates( double current_time  )//void )
+void Microenvironment::update_rates( void )
 {
 	if( supply_target_densities_times_supply_rates.size() != number_of_voxels() )
 	{ supply_target_densities_times_supply_rates.assign( number_of_voxels() , zero ); }
@@ -813,7 +790,7 @@ void Microenvironment::update_rates( double current_time  )//void )
 	for( unsigned int i=0 ; i < number_of_voxels() ; i++ )
 	{
 		bulk_uptake_rate_function( this,i, &(uptake_rates[i]) ); 		
-		bulk_supply_rate_function( this,i, &(supply_rates[i]), current_time ); 		
+		bulk_supply_rate_function( this,i, &(supply_rates[i]) ); 		
 		bulk_supply_target_densities_function( this,i, &(supply_target_densities_times_supply_rates[i]) );
 		
 		supply_target_densities_times_supply_rates[i] *= supply_rates[i]; 
