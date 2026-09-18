@@ -140,7 +140,7 @@ void physimess_mechanics( double dt )
         last_update_time = PhysiCell_globals.current_time;
         
         //#pragma omp parallel for
-        // This is not parallel because we are modifying the agent grid
+        // This is not parallel because we are modifying the agend grid
         for( int i=0; i < (*all_cells).size(); i++ )
         {
             Cell* pC = (*all_cells)[i];
@@ -186,7 +186,6 @@ void physimess_mechanics( double dt )
                 static_cast<PhysiMeSS_Fibre*>(pC)->add_crosslinks();
             }
         }
-
     }
 }
 
@@ -198,7 +197,7 @@ void fibre_agent_SVG(std::ofstream& os, PhysiCell::Cell* pC, double z_slice, std
     
         PhysiMeSS_Fibre* pFibre = static_cast<PhysiMeSS_Fibre*>(pC);
 		int crosslinks = pFibre->X_crosslink_count;
-        /*if (crosslinks >= 3){
+        if (crosslinks >= 3){
 			// if fibre has cross-links different colour than if not
 			Write_SVG_line(os, (pC->position)[0] - (pFibre->mLength) * (pC->state.orientation)[0] - X_lower,
 							(pC->position)[1] - (pFibre->mLength) * (pC->state.orientation)[1] - Y_lower,
@@ -214,21 +213,21 @@ void fibre_agent_SVG(std::ofstream& os, PhysiCell::Cell* pC, double z_slice, std
 							(pC->position)[1] + (pFibre->mLength) * (pC->state.orientation)[1] - Y_lower,
 							4.0, "blue");
 		}
-		else if (crosslinks == 1){*/
+		else if (crosslinks == 1){
 			// if fibre has cross-links different colour than if not
 			Write_SVG_line(os, (pC->position)[0] - (pFibre->mLength) * (pC->state.orientation)[0] - X_lower,
 							(pC->position)[1] - (pFibre->mLength) * (pC->state.orientation)[1] - Y_lower,
 							(pC->position)[0] + (pFibre->mLength) * (pC->state.orientation)[0] - X_lower,
 							(pC->position)[1] + (pFibre->mLength) * (pC->state.orientation)[1] - Y_lower,
 							4.0, "steelblue");
-		/*}
+		}
 		else {
     		Write_SVG_line(os, (pC->position)[0] - (pFibre->mLength) * (pC->state.orientation)[0] - X_lower,
 							(pC->position)[1] - (pFibre->mLength) * (pC->state.orientation)[1] - Y_lower,
 							(pC->position)[0] + (pFibre->mLength) * (pC->state.orientation)[0] - X_lower,
 							(pC->position)[1] + (pFibre->mLength) * (pC->state.orientation)[1] - Y_lower,
 							4.0, "lightskyblue");
-		}*/
+		}
 
 	}
 	else{
