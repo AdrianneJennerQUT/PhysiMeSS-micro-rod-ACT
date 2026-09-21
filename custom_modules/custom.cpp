@@ -275,7 +275,7 @@ std::vector<std::string> paint_by_cell_type_and_state( Cell* pCell )
 
     // Get values
     double activation_time_thresh = parameters.doubles("activation_time_thresh");
-    double max_time = 1000;
+    double max_time = 3000;
 
     int color = (int) round( ((time_attached)/max_time) * 255 );
     //std::cout<<"time attached: "<<time_attached<<" col: "<<color<<std::endl;
@@ -323,17 +323,30 @@ void phenotype_function( Cell* pCell, Phenotype& phenotype, double dt )
 
     static int t_type   = get_cell_definition("cell").type; 
 	int k_state = pCell->custom_data.find_variable_index("state");
-
+	double THRESH_MIN = parameters.doubles("activation_time_thresh");
+ 
     if( pCell->type == t_type && pCell->custom_data[k_state] > 0.5) // if cell is already active
     {
 		cell_proliferation_based_on_IL2(pCell, phenotype, dt);
-		check_cell_contact(pCell,phenotype,dt);
+		//check_cell_contact(pCell,phenotype,dt);
 	}
-	else if(pCell->type == t_type) // cell is a T cell but not active
-	{
-		check_cell_contact(pCell,phenotype,dt);
-		check_for_activation(pCell,phenotype,dt);
-	}
+	else if(pCell->type == t_type && pCell->custom_data["attached_time"]>THRESH_MIN )
+    {
+        pCell->custom_data[k_state] = 1.0;
+
+		#pragma omp critical
+		std::cout
+		<< "[Tcell ACTIVATED]"
+		<< " id =" << pCell->ID
+		<< " total_time =" << pCell->custom_data["attached_time"]
+		<< " t =" << PhysiCell_globals.current_time
+		<< std::endl;
+    }
+    //if(pCell->type == t_type) // cell is a T cell but not active
+	//{
+		//check_cell_contact(pCell,phenotype,dt);
+		//check_for_activation(pCell,phenotype,dt);
+	//}
 		
 	return; 
 }
@@ -368,11 +381,12 @@ void check_cell_contact( Cell* pCell , Phenotype& phenotype, double dt )
     pCell->custom_data[k_touch] = 0.0;
 
     auto nearby = pCell->nearby_interacting_cells();
+
  
     //set migration speed at 1 to start
     
     // AJ ADDED 
-    pCell->phenotype.motility.migration_speed = 1;
+    //pCell->phenotype.motility.migration_speed = 1;
 
     for( Cell* other : nearby )
     {
@@ -404,6 +418,7 @@ void check_cell_contact( Cell* pCell , Phenotype& phenotype, double dt )
 	
 	return;
 }
+
 void check_for_activation( Cell* pCell , Phenotype& phenotype, double dt )
 {
 	
