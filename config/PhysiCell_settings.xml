@@ -555,7 +555,7 @@
       <rPmax type="double" units="/min">4.78e-04</rPmax> <!-- 4.78e-04 in Mason's paper -->
 		  <IP type="double" units="ng/um^2">3.47e-12</IP> <!-- 3.47e-12 ng/um^2 in Mason's paper, but this is an areal density -->
         
-      <activation_time_thresh type="double" units="" description="flag for coloring cells by pressure">180</activation_time_thresh>
+      <activation_time_thresh type="double" units="" description="flag for coloring cells by pressure">400</activation_time_thresh>
 
       <v type="double" units="/min">0.8e-4</v> <!-- 2.3e-4 in Mason's paper -->
       <q type="double" units="ng/microg">6.2</q> <!-- 6.2 in Mason's paper -->
