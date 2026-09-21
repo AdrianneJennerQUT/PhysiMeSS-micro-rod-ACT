@@ -1,11 +1,13 @@
 %% Getting Data from Output
 
 % NOTE: change this to your directory
-base_dir = 'C:\Users\mason\OneDrive - Queensland University of Technology\PhD Notes\Publications\PhysiCell paper\PhysiCell\output'; 
+%base_dir = 'C:/Users/adria/OneDrive - Queensland University of Technology/Documents/Research/PhysiCell/PhysiCell rods + T cells/PhysiMeSS-master/PhysiMeSS-master/output'; 
 
-plot_IL2_2D = false; % true to make animation of IL-2, false to create population plots faster
+% NOTE CHANGE THIS DIRECTORY - CHECK IT IS THE RIGHT DIRECTORY
+base_dir = 'C:/Users/adria/OneDrive - Queensland University of Technology/Documents/Research/PhysiCell/PhysiCell rods + T cells/PhysiMeSS-master/PP/output';
 
-
+plot_IL2_2D = true; % true to make animation of IL-2, false to create population plots faster
+index = 1;
 
 %automating the loading of the outputs
 A1 = 'output0000000';
@@ -85,6 +87,7 @@ for tcount = 1:timetotal
     %ExhaustedT_all(tcount)   = sum(t_states > 1.5);
     InactiveT_all(tcount) = sum(t_states < 0.5);
     ActiveT_all(tcount) = sum(t_states == 1); 
+    totalTcells(tcount) = length(T_c);
     
     IL2_vol = MCDS.continuum_variables.data;
     IL2_mass(tcount) = sum(IL2_vol(:) .* [MCDS.mesh.voxels.volume]'); % sum(sum(MCDS.continuum_variables(1).data(:,:,k)))*(MCDS.mesh.X_coordinates(2)-MCDS.mesh.X_coordinates(1))*(MCDS.mesh.Y_coordinates(2)-MCDS.mesh.Y_coordinates(1));
@@ -134,7 +137,7 @@ for tcount = 1:timetotal
     %plotting contour plot of substrate
     if plot_IL2_2D
         contourf( MCDS.mesh.X(:,:,k), MCDS.mesh.Y(:,:,k), ...
-            MCDS.continuum_variables(index).data(:,:,k) , 20 ) ;
+            MCDS.continuum_variables(index).data(:,:,k), 20 );
         axis image;
         colorbar; 
         xlabel( sprintf( 'x (%s)' , MCDS.metadata.spatial_units) ); 
@@ -237,11 +240,6 @@ agent_pos = [rod_pos; cell_pos];
 %cell_pos = agent_pos(types==0,:);
 %rod_pos = agent_pos(types==1,:);
 %rod_rot = MCDS.discrete_cells.state.orientation(types==1,:);
-
-figure
-scatter(cell_pos(:,1), cell_pos(:,2))
-hold on
-scatter(rod_pos(:,1), rod_pos(:,2), color="red")
 
 avgdist_cells = 0;
 avgdist_rods = 0;
