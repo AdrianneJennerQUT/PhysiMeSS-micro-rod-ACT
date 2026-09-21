@@ -21,7 +21,6 @@ void remove_physimess_out_of_bounds_fibres()
 
 void physimess_update_cell_velocity( Cell* pCell, Phenotype& phenotype, double dt)
 {
-    
     double movement_threshold = pCell->custom_data["fibre_stuck_threshold"];
     if (!isFibre(pCell) && phenotype.motility.is_motile) {
 	
@@ -85,8 +84,21 @@ void physimess_update_cell_velocity( Cell* pCell, Phenotype& phenotype, double d
                 //Already done above
                 continue;
             } else 
-            if (!isFibre(pCell) && isFibre(neighbor)) {
+            if (!isFibre(pCell) && isFibre(neighbor)) 
+            {
                 static_cast<PhysiMeSS_Cell*>(pCell)->add_potentials_from_fibre(static_cast<PhysiMeSS_Fibre*>(neighbor));
+                
+                // ---- AJ ADDED NEW CODE --------
+               // double dx = pCell->position[0] - neighbour->position[0];
+               // double dy = pCell->position[1] - neighbour->position[1];
+               // double dz = pCell->position[2] - neighbour->position[2];
+               // double d  = std::sqrt(dx*dx + dy*dy + dz*dz);
+
+               // double contact_dist = pCell->phenotype.geometry.radius + other->custom_data["fibre_radius"];
+
+                //if( d <= contact_dist )
+               // {pCell->custom_data["attached_time"] += 0.1;}
+                
             } else  if (isFibre(pCell) && !isFibre(neighbor)) {
                 static_cast<PhysiMeSS_Fibre*>(pCell)->add_potentials_from_cell(static_cast<PhysiMeSS_Cell*>(neighbor));
             } else if (isFibre(pCell) && isFibre(neighbor)) {
