@@ -253,7 +253,6 @@ void setup_tissue( void )
 
     remove_physimess_out_of_bounds_fibres();
     
-    // std::cout << std::endl;
 }
 
 
@@ -439,7 +438,7 @@ void fibre_time_secretion_function( Cell* pCell, Phenotype& phenotype, double dt
     double v   = parameters.doubles("v"); 
     double q   = parameters.doubles("q");
 
-    static double rod_length = pCell->custom_data["fibre_length"];
+    static double rod_length = pCell->custom_data["f_length"];//["fibre_length"];
     static double rod_radius = pCell->custom_data["fibre_radius"];
     double rho = parameters.doubles("rod_mass")/(rod_length*3.14*rod_radius*rod_radius); // mass density of a single rod (ug/um^3) 
 
@@ -484,7 +483,7 @@ void tcell_division_function( Cell* pParent, Cell* pDaughter )
 
    // clamp_cell_to_domain(pParent);
    // clamp_cell_to_domain(pDaughter);
-	
+	return;
 }
 
 Cell* instantiate_physimess_cell() { return new PhysiMeSS_Cell; }
