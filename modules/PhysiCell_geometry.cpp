@@ -332,6 +332,7 @@ void load_cells_csv_v1( std::string filename )
 			pCell->custom_data["f_length"] = f_length;
 			pCell->custom_data["f_orien_1"] = orien_f[0];
 			pCell->custom_data["f_orien_2"] = orien_f[1];
+			pCell->custom_data["rod_mass"] = 6.28318530718*parameters.doubles("rod_radius")*(parameters.doubles("rod_radius")+f_length)/parameters.doubles("rod_surface_area_ratio"); // compute mass of rod
 		}
 		else
 		{
