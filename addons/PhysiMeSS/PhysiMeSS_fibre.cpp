@@ -199,7 +199,8 @@ void PhysiMeSS_Fibre::check_out_of_bounds(std::vector<double>& position)
 void PhysiMeSS_Fibre::add_potentials_from_cell(PhysiMeSS_Cell* cell) 
 {
     // fibres only get pushed or rotated by motile cells
-    //-------- AJ CHANGED----------
+    
+    //-------- AJ CHANGED TO ALLOW ALL FIBRES TO BE PUSHED----------
     /*
     if (!cell->phenotype.motility.is_motile || X_crosslink_count >= 2) {
         return;
@@ -214,6 +215,10 @@ void PhysiMeSS_Fibre::add_potentials_from_cell(PhysiMeSS_Cell* cell)
     // fibre should only interact with cell if it comes within cell radius plus fibre radius (note fibre radius ~2 micron)
     double R = phenotype.geometry.radius + mRadius;
     if (distance <= R) {
+
+        // ----- AJ ADDED NEW CODE, IF CELL ADDS POTENTIALS TO FIBRE, THEN IT MUST BE IN CONTACT ----
+        cell->custom_data["attached_time"] += 0.1;    // ADDING MECHANICS DELTA T
+
         std::vector<double> point_of_impact(3, 0.0);
         for (int index = 0; index < 3; index++) {
             point_of_impact[index] = (*cell).position[index] - displacement[index];
