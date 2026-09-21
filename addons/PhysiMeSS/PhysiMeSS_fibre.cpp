@@ -73,18 +73,21 @@ void PhysiMeSS_Fibre::assign_fibre_orientation()
    mRadius = this->custom_data["fibre_radius"];
     this->assign_orientation();
     if (default_microenvironment_options.simulate_2D) {
-        if (this->custom_data["anisotropic_fibres"] > 0.5){
+        if (this->custom_data["anisotropic_fibres"] > 0.5)
+        {
             double theta = PhysiCell::NormalRandom(this->custom_data["fibre_angle"], this->custom_data["angle_normdist_sd"]);
             this->state.orientation[0] = cos(theta);
             this->state.orientation[1] = sin(theta);
         }
-        else{
-            //this->state.orientation = PhysiCell::UniformOnUnitCircle();
-
-             // AJ ADDED!!!!!!
+        else if (this->custom_data["loaded_fibres"] > 0.5)
+        {
+            // AJ ADDED!!!!!!
              this->state.orientation[0] = this->custom_data["f_orien_1"];
              this->state.orientation[1] = this->custom_data["f_orien_2"];       
-
+        }
+        else
+        {
+            this->state.orientation = PhysiCell::UniformOnUnitCircle();
         }
         this->state.orientation[2] = 0.0;
     }

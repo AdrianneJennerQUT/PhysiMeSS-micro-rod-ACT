@@ -196,7 +196,7 @@ void fibre_agent_SVG(std::ofstream& os, PhysiCell::Cell* pC, double z_slice, std
 	if (isFibre(pC) ){
     
         PhysiMeSS_Fibre* pFibre = static_cast<PhysiMeSS_Fibre*>(pC);
-		int crosslinks = pFibre->X_crosslink_count;
+		/*int crosslinks = pFibre->X_crosslink_count;
         if (crosslinks >= 3){
 			// if fibre has cross-links different colour than if not
 			Write_SVG_line(os, (pC->position)[0] - (pFibre->mLength) * (pC->state.orientation)[0] - X_lower,
@@ -221,13 +221,13 @@ void fibre_agent_SVG(std::ofstream& os, PhysiCell::Cell* pC, double z_slice, std
 							(pC->position)[1] + (pFibre->mLength) * (pC->state.orientation)[1] - Y_lower,
 							4.0, "steelblue");
 		}
-		else {
+		else {*/
     		Write_SVG_line(os, (pC->position)[0] - (pFibre->mLength) * (pC->state.orientation)[0] - X_lower,
 							(pC->position)[1] - (pFibre->mLength) * (pC->state.orientation)[1] - Y_lower,
 							(pC->position)[0] + (pFibre->mLength) * (pC->state.orientation)[0] - X_lower,
 							(pC->position)[1] + (pFibre->mLength) * (pC->state.orientation)[1] - Y_lower,
-							4.0, "lightskyblue");
-		}
+							4.0, "steelblue");//lightskyblue
+		//}
 
 	}
 	else{
