@@ -149,8 +149,20 @@ void display_simulation_status( std::ostream& os )
 		PhysiCell_settings.time_units << " (max: " << 
 		PhysiCell_settings.max_time << " " << 
 		PhysiCell_settings.time_units << ")" << std::endl; 
-		
-	os << "total agents: " << all_cells->size() << std::endl; 
+
+	int nai_count = 0; // ML: count number of naive and activated cells
+	int act_count = 0;
+	for( Cell* pCell : (*all_cells) ){
+		if(pCell->type_name == "cell"){
+			if(pCell->custom_data["state"] == 0){
+				nai_count++;
+			} else{
+				act_count++;
+			}
+		}
+	}
+
+	os << "activated cells: " << act_count << ".  naive cells: " << nai_count << ".      (rods: " << parameters.ints("number_of_fibres") << ",  total agents: " << all_cells->size() << ")" << std::endl; 
 	
 	os << "interval wall time: ";
 	BioFVM::TOC();
@@ -161,6 +173,13 @@ void display_simulation_status( std::ostream& os )
 	os << "total wall time: "; 
 	BioFVM::RUNTIME_TOC();
 	BioFVM::display_stopwatch_value( os , BioFVM::runtime_stopwatch_value() ); 
+
+	double progress = PhysiCell_globals.current_time / PhysiCell_settings.max_time; // ML: calculate estimated run time
+	double elapsed_time = BioFVM::runtime_stopwatch_value();
+	double estimated_remaining_time = elapsed_time / progress - elapsed_time;
+	os << "\nestimated remaining time: ";
+	BioFVM::display_stopwatch_value( os , estimated_remaining_time );
+
 	os << std::endl << std::endl; 
 	
 	return;
