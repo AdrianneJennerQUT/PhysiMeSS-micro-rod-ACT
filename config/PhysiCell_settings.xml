@@ -230,7 +230,7 @@
           <vel_adhesion units="" description="cell velocity parallel to fibre">0.6</vel_adhesion> <!-- was 0.6 -->
           <vel_contact units="" description="cell velocity orthogonal to fibre">0.1</vel_contact> <!-- was 0.1 -->
           <cell_velocity_max units="" description="max cell velocity">1.0</cell_velocity_max>          
-          <state units="" description="activation status">0.0</state> <!-- was 0 -->
+          <state units="" description="activation status">0</state> <!-- was 0 -->
           <touching_rod units="" description="boolean touching rod">0.0</touching_rod>
           <attached_time units="" description="cumulative time of attachment">0.0</attached_time>
 
@@ -564,7 +564,7 @@
       <rod_radius type="double" units="um">2.55</rod_radius> <!-- average radius of rods; Table 2 in Zhang et al. 2020. Duplicate of variable in above section, but that one can't be accessed where I need it -->
       <rod_surface_area_ratio type="double" units="um^2/ug">5.72e8</rod_surface_area_ratio> <!-- surface area per mass of micro-rod; Table 2 in Zhang et al. 2020. Used to compute mass of individual micro-rods -->
 
-      <rPmax type="double" units="/min">9.56e-04</rPmax> <!-- 4.78e-04 in Mason's paper -->
+      <rPmax type="double" units="/min">4.78e-04</rPmax> <!-- 4.78e-04 in Mason's paper -->
       <IP type="double" units="ng/um^2">3.47e-12</IP> <!-- 3.47e-12 ng/um^2 in Mason's paper, but this is an areal density -->
       <v type="double" units="/min">2.3e-4</v> <!-- secretion rate; 2.3e-4 in Mason's paper -->
       <q type="double" units="ng/microg">6.2</q> <!-- IL-2 mass to micro-rod mass ratio; 6.2 in Mason's paper -->
