@@ -201,7 +201,7 @@ void setup_microenvironment( void )
     std::cout<< "Domain height (z direction): " << Zmax <<std::endl;
 
     //parameters.doubles("scaling_factor") = parameters.doubles("exp_vol")/(Xmax*Ymax*Zmax); // compute scaling factor as the number of our simulation domains to represent the full experimental volume
-    parameters.ints("number_of_cells") = parameters.doubles("exp_cells")/parameters.doubles("scaling_factor"); // scale the experimental cell count using scaling factor, rounds down to nearest int
+    parameters.ints("number_of_cells") = parameters.doubles("exp_cells")/parameters.doubles("scaling_factor")+0.5; // scale the experimental cell count using scaling factor, rounds to nearest int (truncates the decimals, so +0.5 to round up or down)
     std::cout<< "Number of cells (before rounding): " << parameters.doubles("exp_cells")/parameters.doubles("scaling_factor") <<std::endl;
     if (parameters.ints("number_of_cells") == 0){ parameters.ints("number_of_cells") = 1; } // make sure there is at least one cell
 
@@ -397,13 +397,8 @@ void phenotype_function( Cell* pCell, Phenotype& phenotype, double dt )
     {
         pCell->custom_data[k_state] = 1.0;
 
-		#pragma omp critical
-		std::cout
-		<< "[Tcell ACTIVATED]"
-		<< " id =" << pCell->ID
-		<< " total_time =" << pCell->custom_data["attached_time"]
-		<< " t =" << PhysiCell_globals.current_time
-		<< std::endl;
+		//#pragma omp critical
+		//std::cout << "[Tcell ACTIVATED]" << " id =" << pCell->ID << " total_time =" << pCell->custom_data["attached_time"] << " t =" << PhysiCell_globals.current_time << std::endl;
     }
     //if(pCell->type == t_type) // cell is a T cell but not active
 	//{
@@ -560,10 +555,8 @@ void tcell_division_function( Cell* pParent, Cell* pDaughter )
         if( pDaughter->custom_data[k_time]  >= 0 ) pDaughter->custom_data[k_time]  = 0.0;
         if( pDaughter->custom_data[k_touch] >= 0 ) pDaughter->custom_data[k_touch] = 0.0;
 
-        #pragma omp critical
-        std::cerr << "[DIV] parent active -> daughter naive | parent id="
-                  << pParent->ID << " daughter id=" << pDaughter->ID
-                  << " t=" << PhysiCell_globals.current_time << "\n";
+        //#pragma omp critical
+        //std::cerr << "[DIV] parent active -> daughter naive | parent id=" << pParent->ID << " daughter id=" << pDaughter->ID << " t=" << PhysiCell_globals.current_time << "\n";
     }
 
    // clamp_cell_to_domain(pParent);
