@@ -21,7 +21,6 @@ void remove_physimess_out_of_bounds_fibres()
 
 void physimess_update_cell_velocity( Cell* pCell, Phenotype& phenotype, double dt)
 {
-    
     double movement_threshold = pCell->custom_data["fibre_stuck_threshold"];
     if (!isFibre(pCell) && phenotype.motility.is_motile) {
 	
@@ -85,8 +84,21 @@ void physimess_update_cell_velocity( Cell* pCell, Phenotype& phenotype, double d
                 //Already done above
                 continue;
             } else 
-            if (!isFibre(pCell) && isFibre(neighbor)) {
+            if (!isFibre(pCell) && isFibre(neighbor)) 
+            {
                 static_cast<PhysiMeSS_Cell*>(pCell)->add_potentials_from_fibre(static_cast<PhysiMeSS_Fibre*>(neighbor));
+                
+                // ---- AJ ADDED NEW CODE --------
+               // double dx = pCell->position[0] - neighbour->position[0];
+               // double dy = pCell->position[1] - neighbour->position[1];
+               // double dz = pCell->position[2] - neighbour->position[2];
+               // double d  = std::sqrt(dx*dx + dy*dy + dz*dz);
+
+               // double contact_dist = pCell->phenotype.geometry.radius + other->custom_data["fibre_radius"];
+
+                //if( d <= contact_dist )
+               // {pCell->custom_data["attached_time"] += 0.1;}
+                
             } else  if (isFibre(pCell) && !isFibre(neighbor)) {
                 static_cast<PhysiMeSS_Fibre*>(pCell)->add_potentials_from_cell(static_cast<PhysiMeSS_Cell*>(neighbor));
             } else if (isFibre(pCell) && isFibre(neighbor)) {
@@ -140,7 +152,7 @@ void physimess_mechanics( double dt )
         last_update_time = PhysiCell_globals.current_time;
         
         //#pragma omp parallel for
-        // This is not parallel because we are modifying the agent grid
+        // This is not parallel because we are modifying the agend grid
         for( int i=0; i < (*all_cells).size(); i++ )
         {
             Cell* pC = (*all_cells)[i];
@@ -186,7 +198,6 @@ void physimess_mechanics( double dt )
                 static_cast<PhysiMeSS_Fibre*>(pC)->add_crosslinks();
             }
         }
-
     }
 }
 
@@ -197,8 +208,8 @@ void fibre_agent_SVG(std::ofstream& os, PhysiCell::Cell* pC, double z_slice, std
 	if (isFibre(pC) ){
     
         PhysiMeSS_Fibre* pFibre = static_cast<PhysiMeSS_Fibre*>(pC);
-		int crosslinks = pFibre->X_crosslink_count;
-        /*if (crosslinks >= 3){
+		/*int crosslinks = pFibre->X_crosslink_count;
+        if (crosslinks >= 3){
 			// if fibre has cross-links different colour than if not
 			Write_SVG_line(os, (pC->position)[0] - (pFibre->mLength) * (pC->state.orientation)[0] - X_lower,
 							(pC->position)[1] - (pFibre->mLength) * (pC->state.orientation)[1] - Y_lower,
@@ -214,21 +225,21 @@ void fibre_agent_SVG(std::ofstream& os, PhysiCell::Cell* pC, double z_slice, std
 							(pC->position)[1] + (pFibre->mLength) * (pC->state.orientation)[1] - Y_lower,
 							4.0, "blue");
 		}
-		else if (crosslinks == 1){*/
+		else if (crosslinks == 1){
 			// if fibre has cross-links different colour than if not
 			Write_SVG_line(os, (pC->position)[0] - (pFibre->mLength) * (pC->state.orientation)[0] - X_lower,
 							(pC->position)[1] - (pFibre->mLength) * (pC->state.orientation)[1] - Y_lower,
 							(pC->position)[0] + (pFibre->mLength) * (pC->state.orientation)[0] - X_lower,
 							(pC->position)[1] + (pFibre->mLength) * (pC->state.orientation)[1] - Y_lower,
 							4.0, "steelblue");
-		/*}
-		else {
+		}
+		else {*/
     		Write_SVG_line(os, (pC->position)[0] - (pFibre->mLength) * (pC->state.orientation)[0] - X_lower,
 							(pC->position)[1] - (pFibre->mLength) * (pC->state.orientation)[1] - Y_lower,
 							(pC->position)[0] + (pFibre->mLength) * (pC->state.orientation)[0] - X_lower,
 							(pC->position)[1] + (pFibre->mLength) * (pC->state.orientation)[1] - Y_lower,
-							4.0, "lightskyblue");
-		}*/
+							4.0, "steelblue");//lightskyblue
+		//}
 
 	}
 	else{

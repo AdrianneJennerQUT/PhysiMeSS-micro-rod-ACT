@@ -311,16 +311,15 @@ void load_cells_csv_v1( std::string filename )
 		std::vector<double> data;
 		csv_to_vector( line.c_str() , data ); 
 
-		/* aj removed this as I want to load in data files that have multiple columns of information
-		if( data.size() != 4 )
+		/*if( data.size() != 4 )
 		{
 			std::cout << "Error! Importing cells from a CSV file expects each row to be x,y,z,typeID." << std::endl;
 			exit(-1);
 		}*/
 
 		std::vector<double> position = { data[0] , data[1] , data[2] };
-		std::vector<double> orien = { data[4] , data[5] , data[6] };
-		double length_f = { data[7] };
+		double f_length = data[4];
+		std::vector<double> orien_f = { data[5] , data[6] , data[7] };
 
 		int my_type = (int) data[3]; 
 		Cell_Definition* pCD = find_cell_definition( my_type );
@@ -330,10 +329,10 @@ void load_cells_csv_v1( std::string filename )
 			<< position << std::endl; 
 			Cell* pCell = create_cell( *pCD ); 
 			pCell->assign_position( position ); 
-			pCell->custom_data["individual_orientation_1"]=orien[0];
-			pCell->custom_data["individual_orientation_2"]=orien[1];
-			pCell->custom_data["individual_orientation_3"]=orien[2];
-			pCell->custom_data["individual_length"]=length_f;
+			pCell->custom_data["f_length"] = f_length;
+			pCell->custom_data["f_orien_1"] = orien_f[0];
+			pCell->custom_data["f_orien_2"] = orien_f[1];
+			pCell->custom_data["rod_mass"] = 6.28318530718*parameters.doubles("rod_radius")*(parameters.doubles("rod_radius")+f_length)/parameters.doubles("rod_surface_area_ratio"); // compute mass of rod
 		}
 		else
 		{

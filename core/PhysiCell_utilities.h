@@ -33,7 +33,7 @@
 #                                                                             #
 # BSD 3-Clause License (see https://opensource.org/licenses/BSD-3-Clause)     #
 #                                                                             #
-# Copyright (c) 2015-2021, Paul Macklin and the PhysiCell Project             #
+# Copyright (c) 2015-2024, Paul Macklin and the PhysiCell Project             #
 # All rights reserved.                                                        #
 #                                                                             #
 # Redistribution and use in source and binary forms, with or without          #
@@ -65,49 +65,52 @@
 ###############################################################################
 */
 
-#include "../core/PhysiCell.h"
-#include "../modules/PhysiCell_standard_modules.h" 
-#include "../addons/PhysiMeSS/PhysiMeSS.h"
+#ifndef __PhysiCell_utilities_h__
+#define __PhysiCell_utilities_h__
 
-using namespace BioFVM; 
-using namespace PhysiCell;
+#include <iostream>
+#include <ctime>
+#include <cmath>
+#include <string>
+#include <vector>
+#include <chrono>
+#include <random>
 
-// setup functions to help us along 
+#include <omp.h> 
 
-void create_cell_types( void );
-void setup_tissue( void ); 
+namespace PhysiCell{
 
-// set up the BioFVM microenvironment 
-void setup_microenvironment( void ); 
 
-// custom pathology coloring function 
+	extern std::vector<unsigned int> physicell_random_seeds; 
 
-std::vector<std::string> my_coloring_function( Cell* );
-std::string my_coloring_function_for_substrate( double concentration, double max_conc, double min_conc );
-void my_cellcount_function(char* string);
+void setup_rng( void );
+void SeedRandom( unsigned int input );
+void SeedRandom( void );
 
-// custom functions can go here 
+double UniformRandom( void );
 
-void custom_function( Cell* pCell, Phenotype& phenotype, double dt );
-void phenotype_function( Cell* pCell, Phenotype& phenotype, double dt );
-void contact_function( Cell* pMe, Phenotype& phenoMe , Cell* pOther, Phenotype& phenoOther , double dt ); 
+int UniformInt( void );
+double NormalRandom( double mean, double standard_deviation );
+double LogNormalRandom( double mean, double standard_deviation );
 
-void cell_proliferation_based_on_IL2( Cell* pCell , Phenotype& phenotype, double dt );
-void check_cell_contact( Cell* pCell , Phenotype& phenotype, double dt );
-void check_for_activation( Cell* pCell , Phenotype& phenotype, double dt );
+std::vector<double> UniformOnUnitSphere( void ); 
+std::vector<double> UniformOnUnitCircle( void ); 
 
-void fibre_time_secretion_function( Cell* pCell, Phenotype& phenotype, double dt );
+std::vector<double> LegacyRandomOnUnitSphere( void ); 
 
-void tcell_division_function( Cell* pParent, Cell* pDaughter );
 
-std::vector<std::string> paint_by_cell_type_and_state( Cell* pCell );
+double dist_squared(std::vector<double> p1, std::vector<double> p2);
+double dist(std::vector<double> p1, std::vector<double> p2);
 
-Cell* instantiate_physimess_cell();
-Cell* instantiate_physimess_fibre();
-Cell* instantiate_physimess_cell_custom_degrade();
+std::string get_PhysiCell_version( void ); 
+void get_PhysiCell_version( std::string& pString ); 
 
-class PhysiMeSS_Cell_Custom_Degrade : public PhysiMeSS_Cell
-{
-  public:  
-  void degrade_fibre(PhysiMeSS_Fibre* pFibre);
+void display_citations( std::ostream& os ); 
+void display_citations( void ); 
+void add_software_citation( std::string name , std::string version, std::string DOI, std::string URL ); 
+
+int choose_event( std::vector<double>& probabilities ); 
+
 };
+
+#endif

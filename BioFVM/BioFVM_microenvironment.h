@@ -154,13 +154,13 @@ class Microenvironment
 	std::vector< std::vector<double> > supply_target_densities_times_supply_rates; 
 	std::vector< std::vector<double> > supply_rates; 
 	std::vector< std::vector<double> > uptake_rates; 
-	void update_rates( double current_time); //void ); 
+	void update_rates( void ); 
 	
 	Microenvironment(); 
 	Microenvironment(std::string name);
 	
 	void (*diffusion_decay_solver)( Microenvironment&, double); 
-	void (*bulk_supply_rate_function)( Microenvironment* pMicroenvironment, int voxel_index, std::vector<double>* write_destination, double current_time );
+	void (*bulk_supply_rate_function)( Microenvironment* pMicroenvironment, int voxel_index, std::vector<double>* write_destination );
 	void (*bulk_supply_target_densities_function)( Microenvironment* pMicroenvironment, int voxel_index, std::vector<double>* write_destination );
 	void (*bulk_uptake_rate_function)( Microenvironment* pMicroenvironment, int voxel_index, std::vector<double>* write_destination );
 		
@@ -229,12 +229,12 @@ class Microenvironment
 	void simulate_diffusion_decay( double dt ); 
 	
 	/*! advance the source/sink solver by dt time */
-	void simulate_bulk_sources_and_sinks( double dt, double current_time ); 
+	void simulate_bulk_sources_and_sinks( double dt ); 
 	
 	// use the supplied list of cells
-	void simulate_cell_sources_and_sinks( std::vector<Basic_Agent*>& basic_agent_list , double dt, double current_time ); 
+	void simulate_cell_sources_and_sinks( std::vector<Basic_Agent*>& basic_agent_list , double dt ); 
 	// use the global list of cells 
-	void simulate_cell_sources_and_sinks( double dt, double current_time ); 
+	void simulate_cell_sources_and_sinks( double dt ); 
 	
 	void display_information( std::ostream& os ); 
 	
@@ -297,8 +297,6 @@ void zero_function( std::vector<double>& position, std::vector<double>& input , 
 void one_function( std::vector<double>& position, std::vector<double>& input , std::vector<double>* destination );
 
 void zero_function( Microenvironment* pMicroenvironment, int voxel_index, std::vector<double>* write_destination );
-void zero_function_2( Microenvironment* pMicroenvironment, int voxel_index, std::vector<double>* write_destination, double current_time  ); 
-void zero_function_3( Microenvironment* pMicroenvironment, int voxel_index, std::vector<double>* write_destination); 
 void one_function( Microenvironment* pMicroenvironment, int voxel_index, std::vector<double>* write_destination );
 
 void set_default_microenvironment( Microenvironment* M );

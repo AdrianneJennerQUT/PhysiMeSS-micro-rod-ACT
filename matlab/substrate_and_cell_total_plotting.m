@@ -4,8 +4,8 @@
 base_dir = 'C:\Users\mason\OneDrive - Queensland University of Technology\PhD Notes\Publications\PhysiCell paper\PhysiCell\output'; 
 
 plot_IL2_2D = false; % true to make animation of IL-2, false to create population plots faster
-
-
+measure_cluster = false; % true to measure clustering
+index = 1;
 
 %automating the loading of the outputs
 A1 = 'output0000000';
@@ -85,9 +85,10 @@ for tcount = 1:timetotal
     %ExhaustedT_all(tcount)   = sum(t_states > 1.5);
     InactiveT_all(tcount) = sum(t_states < 0.5);
     ActiveT_all(tcount) = sum(t_states == 1); 
+    totalTcells(tcount) = length(T_c);
     
-    IL2_vol = MCDS.continuum_variables.data;
-    IL2_mass(tcount) = sum(IL2_vol(:) .* [MCDS.mesh.voxels.volume]'); % sum(sum(MCDS.continuum_variables(1).data(:,:,k)))*(MCDS.mesh.X_coordinates(2)-MCDS.mesh.X_coordinates(1))*(MCDS.mesh.Y_coordinates(2)-MCDS.mesh.Y_coordinates(1));
+    IL2_conc = MCDS.continuum_variables.data;
+    IL2_mass(tcount) = sum(IL2_conc(:) .* [MCDS.mesh.voxels.volume]'); % sum(sum(MCDS.continuum_variables(1).data(:,:,k)))*(MCDS.mesh.X_coordinates(2)-MCDS.mesh.X_coordinates(1))*(MCDS.mesh.Y_coordinates(2)-MCDS.mesh.Y_coordinates(1));
 
     % Contact time 
 
@@ -96,45 +97,47 @@ for tcount = 1:timetotal
 
 
     % Measure clustering
-    agent_pos = MCDS.discrete_cells.state.position(:,1:2);
-    for i = 1:length(types)
-        closest_cells = Inf;
-        closest_rods = Inf;
-        closest_both = Inf;
-        for j = [1:i-1 i+1:length(types)] % for each pair of agents (except agent i)
-            curr_dist = norm(agent_pos(i,:)-agent_pos(j,:)); % current distance between both agents
-            if types(i) == 0
-                if types(j) == 0 % both T cells
-                    if curr_dist < closest_cells % current distance is closer than the prev closest
-                        closest_cells = curr_dist;
+    if measure_cluster
+        agent_pos = MCDS.discrete_cells.state.position(:,1:2);
+        for i = 1:length(types)
+            closest_cells = Inf;
+            closest_rods = Inf;
+            closest_both = Inf;
+            for j = [1:i-1 i+1:length(types)] % for each pair of agents (except agent i)
+                curr_dist = norm(agent_pos(i,:)-agent_pos(j,:)); % current distance between both agents
+                if types(i) == 0
+                    if types(j) == 0 % both T cells
+                        if curr_dist < closest_cells % current distance is closer than the prev closest
+                            closest_cells = curr_dist;
+                        end
+                    else % i is T cell, j is rod
+                        if curr_dist < closest_both % current distance is closer than the prev closest
+                            closest_both = curr_dist;
+                        end
                     end
-                else % i is T cell, j is rod
-                    if curr_dist < closest_both % current distance is closer than the prev closest
-                        closest_both = curr_dist;
+                elseif types(j) == 1 % both rods
+                    if curr_dist < closest_rods % current distance is closer than the prev closest
+                        closest_rods = curr_dist;
                     end
-                end
-            elseif types(j) == 1 % both rods
-                if curr_dist < closest_rods % current distance is closer than the prev closest
-                    closest_rods = curr_dist;
                 end
             end
+            if types(i) == 0
+                avgdist_cells(tcount) = avgdist_cells(tcount) + closest_cells; % add closest distance to current timestep
+                avgdist_both(tcount) = avgdist_both(tcount) + closest_both;
+            else
+                avgdist_rods(tcount) = avgdist_rods(tcount) + closest_rods;
+            end
         end
-        if types(i) == 0
-            avgdist_cells(tcount) = avgdist_cells(tcount) + closest_cells; % add closest distance to current timestep
-            avgdist_both(tcount) = avgdist_both(tcount) + closest_both;
-        else
-            avgdist_rods(tcount) = avgdist_rods(tcount) + closest_rods;
-        end
+        avgdist_cells(tcount) = avgdist_cells(tcount)/sum(types==0); % average the results
+        avgdist_rods(tcount) = avgdist_rods(tcount)/sum(types==1);
+        avgdist_both(tcount) = avgdist_both(tcount)/sum(types==0);
     end
-    avgdist_cells(tcount) = avgdist_cells(tcount)/sum(types==0); % average the results
-    avgdist_rods(tcount) = avgdist_rods(tcount)/sum(types==1);
-    avgdist_both(tcount) = avgdist_both(tcount)/sum(types==0);
 
 
     %plotting contour plot of substrate
     if plot_IL2_2D
         contourf( MCDS.mesh.X(:,:,k), MCDS.mesh.Y(:,:,k), ...
-            MCDS.continuum_variables(index).data(:,:,k) , 20 ) ;
+            MCDS.continuum_variables(index).data(:,:,k), 20 );
         axis image;
         colorbar; 
         xlabel( sprintf( 'x (%s)' , MCDS.metadata.spatial_units) ); 
@@ -188,6 +191,7 @@ set(gca,'FontSize',18)
 
 figure 
 plot(linspace(0,simulation_time,timetotal),IL2_mass, 'LineWidth',2)
+yline(3.47e-12*MCDS.mesh.X(end)*MCDS.mesh.Y(end), '--')
 %title('Activated v Naive T Cells', 'a_{max} = 1, s = 1')
 xlabel('Time (days)')
 ylabel('IL-2 mass (ng)')
@@ -203,17 +207,18 @@ ylabel('Number of T cells')
 title('Total contact time of T cells with micro-rods')
 
 % Clustering plots
-figure 
-plot(linspace(0,simulation_time,timetotal),avgdist_cells, 'LineWidth',2)
-hold on
-plot(linspace(0,simulation_time,timetotal),avgdist_rods, 'LineWidth',2)
-hold on
-plot(linspace(0,simulation_time,timetotal),avgdist_both, 'LineWidth',2)
-xlabel('Time (days)')
-ylabel('Average distance to nearest neighbour')
-legend('T cells', 'Rods', 'Both', 'Location','best')
-set(gca,'FontSize',18)
-
+if measure_cluster
+    figure 
+    plot(linspace(0,simulation_time,timetotal),avgdist_cells, 'LineWidth',2)
+    hold on
+    plot(linspace(0,simulation_time,timetotal),avgdist_rods, 'LineWidth',2)
+    hold on
+    plot(linspace(0,simulation_time,timetotal),avgdist_both, 'LineWidth',2)
+    xlabel('Time (days)')
+    ylabel('Average distance to nearest neighbour')
+    legend('T cells', 'Rods', 'Both', 'Location','best')
+    set(gca,'FontSize',18)
+end
 
 
 
@@ -237,11 +242,6 @@ agent_pos = [rod_pos; cell_pos];
 %cell_pos = agent_pos(types==0,:);
 %rod_pos = agent_pos(types==1,:);
 %rod_rot = MCDS.discrete_cells.state.orientation(types==1,:);
-
-figure
-scatter(cell_pos(:,1), cell_pos(:,2))
-hold on
-scatter(rod_pos(:,1), rod_pos(:,2), color="red")
 
 avgdist_cells = 0;
 avgdist_rods = 0;

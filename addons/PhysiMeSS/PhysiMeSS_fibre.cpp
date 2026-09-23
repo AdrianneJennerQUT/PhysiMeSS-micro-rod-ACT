@@ -64,25 +64,29 @@ PhysiMeSS_Fibre::PhysiMeSS_Fibre()
 }
 
 void PhysiMeSS_Fibre::assign_fibre_orientation() 
-{ 
-    mLength = PhysiCell::NormalRandom(this->custom_data["fibre_length"], this->custom_data["length_normdist_sd"]) / 2.0;
-    mRadius = this->custom_data["fibre_radius"];
+{  
+    // AJ ADDED!!!!!!
+    mLength = this->custom_data["f_length"]/2;
+
+   // mLength = PhysiCell::NormalRandom(this->custom_data["fibre_length"], this->custom_data["length_normdist_sd"]) / 2.0;
+    
+   mRadius = this->custom_data["fibre_radius"];
     this->assign_orientation();
     if (default_microenvironment_options.simulate_2D) {
-        if (this->custom_data["anisotropic_fibres"] > 0.5){
+        if (this->custom_data["anisotropic_fibres"] > 0.5)
+        {
             double theta = PhysiCell::NormalRandom(this->custom_data["fibre_angle"], this->custom_data["angle_normdist_sd"]);
             this->state.orientation[0] = cos(theta);
             this->state.orientation[1] = sin(theta);
         }
-        
-        else if(PhysiCell::parameters.doubles("rod_length")>0.5)// this needs to be fixed to be a bool flag for csv loading
+        else if (this->custom_data["loaded_fibres"] > 0.5)
         {
-            std::cout<<"HERE"<<std::endl;
-            this->state.orientation[0] = this->custom_data["individual_orientation_1"];
-            this->state.orientation[1] = this->custom_data["individual_orientation_2"];
-            mLength = this->custom_data["individual_length"]/2;
+            // AJ ADDED!!!!!!
+             this->state.orientation[0] = this->custom_data["f_orien_1"];
+             this->state.orientation[1] = this->custom_data["f_orien_2"];       
         }
-        else{
+        else
+        {
             this->state.orientation = PhysiCell::UniformOnUnitCircle();
         }
         this->state.orientation[2] = 0.0;
@@ -195,12 +199,12 @@ void PhysiMeSS_Fibre::check_out_of_bounds(std::vector<double>& position)
 void PhysiMeSS_Fibre::add_potentials_from_cell(PhysiMeSS_Cell* cell) 
 {
     // fibres only get pushed or rotated by motile cells
-    // ------ AJ MAKING CHANGES HERE TO ALLOW ALL FIBRES TO MOVE -----
-    if (!cell->phenotype.motility.is_motile ){//|| X_crosslink_count >= 2) {
+    
+    //-------- AJ CHANGED TO ALLOW ALL FIBRES TO BE PUSHED----------
+    /*
+    if (!cell->phenotype.motility.is_motile || X_crosslink_count >= 2) {
         return;
-    }
-
-    //std::cout<<"HERE: "<<cell->position<<std::endl;
+    }*/
 
     double distance = 0.0;
     nearest_point_on_fibre(cell->position, displacement);
@@ -211,15 +215,17 @@ void PhysiMeSS_Fibre::add_potentials_from_cell(PhysiMeSS_Cell* cell)
     // fibre should only interact with cell if it comes within cell radius plus fibre radius (note fibre radius ~2 micron)
     double R = phenotype.geometry.radius + mRadius;
     if (distance <= R) {
+
+        // ----- AJ ADDED NEW CODE, IF CELL ADDS POTENTIALS TO FIBRE, THEN IT MUST BE IN CONTACT ----
+        cell->custom_data["attached_time"] += 0.1;    // ADDING MECHANICS DELTA T
+
         std::vector<double> point_of_impact(3, 0.0);
         for (int index = 0; index < 3; index++) {
             point_of_impact[index] = (*cell).position[index] - displacement[index];
         }
         // cell-fibre pushing only if fibre no crosslinks
-        // AJ ---- making changes here to cross linking -----!!!!
-
-        //if (X_crosslink_count == 0) {
-
+       // ----- AJ CHANGED THIS IF STATEMENT AND REMOVED IT
+       // if (X_crosslink_count == 0) {
             //fibre pushing turned on
             if (cell->custom_data["fibre_pushing"] > 0.5) {
                 // as per PhysiCell
@@ -259,7 +265,7 @@ void PhysiMeSS_Fibre::add_potentials_from_cell(PhysiMeSS_Cell* cell)
                 state.orientation[1] = old_orientation[0] * sin(angle) + old_orientation[1] * cos(angle);
                 normalize(&state.orientation);
             }
-        //}
+       // }
 
         // fibre rotation around other fibre (2D only and fibres intersect at a single point)
         if (cell->custom_data["fibre_rotation"] > 0.5 && X_crosslink_count == 1) {

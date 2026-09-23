@@ -216,7 +216,6 @@ int main( int argc, char* argv[] )
 
 			// update the microenvironment
 			microenvironment.simulate_diffusion_decay( diffusion_dt );
-			microenvironment.simulate_bulk_sources_and_sinks(diffusion_dt, PhysiCell_globals.current_time);
 
 			physimess_mechanics(mechanics_dt);
 			
@@ -253,9 +252,6 @@ int main( int argc, char* argv[] )
 	
 	std::cout << std::endl << "Total simulation runtime: " << std::endl; 
 	BioFVM::display_stopwatch_value( std::cout , BioFVM::runtime_stopwatch_value() ); 
-
-	//std::system("python simularium.py"); 
-	std::system("make gif"); // NEW: generate simularium file
 
 	return 0; 
 }

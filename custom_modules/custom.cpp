@@ -67,10 +67,6 @@
 
 #include "./custom.h"
 
-// #define _USE_MATH_DEFINES
-// #include <math.h>
-# define M_PI  3.14159265358979323846  // pi
-
 
 
 void create_cell_types( void )
@@ -87,7 +83,7 @@ void create_cell_types( void )
 	   
 	   This is a good place to set default functions. 
 	*/ 
-
+	
 	initialize_default_cell_definition(); 
 	cell_defaults.phenotype.secretion.sync_to_microenvironment( &microenvironment ); 
 
@@ -151,8 +147,6 @@ void create_cell_types( void )
 				pCD->functions.instantiate_cell = instantiate_physimess_cell_custom_degrade;	
 		}
 	}
-
-	
 	/*
 	   This builds the map of cell definitions and summarizes the setup. 
 	*/
@@ -170,49 +164,61 @@ void setup_microenvironment( void )
     microenvironment.mesh.bounding_box[0] = 0; microenvironment.mesh.bounding_box[3] = default_microenvironment_options.X_range[1]; // reassign x_max and y_max in here since these default to 0.5 for some reason
     microenvironment.mesh.bounding_box[1] = 0; microenvironment.mesh.bounding_box[4] = default_microenvironment_options.Y_range[1];
     double Xmax = microenvironment.mesh.bounding_box[3]; double Ymax = microenvironment.mesh.bounding_box[4]; 
-    std::cout<< "x_max: " << Xmax <<std::endl;
+    std::cout<< "Maximum x and y: " << Xmax <<std::endl;
 
-    parameters.ints("number_of_fibres") = 411; // retrieve number of rods from Brynn's digitised scaffold
-    parameters.doubles("rod_mass") = 2*M_PI*parameters.doubles("rod_radius")*(parameters.doubles("rod_radius")+parameters.doubles("rod_length"))/parameters.doubles("rod_surface_area_ratio"); // compute mass of individual rod by dividing the average surface area by the ratio of surface area to mass
-    std::cout<< "Individual rod mass: " << parameters.doubles("rod_mass") <<std::endl;
+    // load in scaffold spreadsheet and add up the mass of rods (code stolen from PhysiCell_geometry -> load_cells_csv_v1)
+    pugi::xml_node node = physicell_config_root.child( "initial_conditions" ).child( "cell_positions" ); // find where the file name is defined
+    std::string folder = xml_get_string_value( node, "folder" ); 
+	std::string filename = xml_get_string_value( node, "filename" ); 
+	std::string input_filename = folder + "/" + filename; // define file name/directory
+    std::ifstream file( input_filename, std::ios::in ); // open file
+    std::string line;
+    double rod_mass = 0;
+	while (std::getline(file, line)) // for each row in the file
+	{
+		std::vector<double> data;
+		csv_to_vector( line.c_str() , data ); // extract the row and convert to array
 
-    parameters.doubles("scaling_factor") = parameters.doubles("tot_rod_mass")/(parameters.ints("number_of_fibres")*parameters.doubles("rod_mass")); // compute scaling factor by comparing mass of rods in domain to total number of rods used in experiments
+        parameters.ints("number_of_fibres") = parameters.ints("number_of_fibres") + 1; // increment the number of rods
+        rod_mass = rod_mass + 6.28318530718*parameters.doubles("rod_radius")*(parameters.doubles("rod_radius")+data[4])/parameters.doubles("rod_surface_area_ratio"); // increment total mass of rods by dividing the average surface area by the ratio of surface area to mass, using length of individual rod
+	}
+	file.close();
+    std::cout<< "Number of rods: " << parameters.ints("number_of_fibres") <<std::endl;
+    std::cout<< "Total mass of rods: " << rod_mass <<std::endl;
+
+    //parameters.ints("number_of_fibres") = 411; // define number of rods from Brynn's digitised scaffold
+    //parameters.doubles("rod_mass") = 6.28318530718*parameters.doubles("rod_radius")*(parameters.doubles("rod_radius")+parameters.doubles("rod_length"))/parameters.doubles("rod_surface_area_ratio"); // compute mass of individual rod by dividing the average surface area by the ratio of surface area to mass
+
+    parameters.doubles("scaling_factor") = parameters.doubles("tot_rod_mass")/rod_mass; // compute scaling factor by comparing total mass of rods in our simulation to the total mass of rods used in experiments
     std::cout<< "Scaling factor: " << parameters.doubles("scaling_factor") <<std::endl;
+
+    //parameters.doubles("rod_mass") = parameters.doubles("rod_mass")/parameters.ints("number_of_fibres"); // replace rod_mass with the average mass of rods in domain (for use in secretion calculation)
+    //std::cout<< "Average rod mass: " << parameters.doubles("rod_mass") <<std::endl;
 
     microenvironment.mesh.bounding_box[2] = 0; microenvironment.mesh.bounding_box[5] = parameters.doubles("exp_vol")/(Xmax*Ymax*parameters.doubles("scaling_factor")); // compute scaling in z direction by comparing simulation domain to scaling factor
     double Zmax = microenvironment.mesh.bounding_box[5]; 
     default_microenvironment_options.dz = Zmax; 
-    std::cout<< "z_max: " << Zmax <<std::endl;
+    std::cout<< "Domain height (z direction): " << Zmax <<std::endl;
 
     //parameters.doubles("scaling_factor") = parameters.doubles("exp_vol")/(Xmax*Ymax*Zmax); // compute scaling factor as the number of our simulation domains to represent the full experimental volume
-    parameters.ints("number_of_cells") = parameters.doubles("exp_cells")/parameters.doubles("scaling_factor"); // scale the experimental cell count using scaling factor, rounds down to nearest int
+    parameters.ints("number_of_cells") = parameters.doubles("exp_cells")/parameters.doubles("scaling_factor")+0.5; // scale the experimental cell count using scaling factor, rounds to nearest int (truncates the decimals, so +0.5 to round up or down)
     std::cout<< "Number of cells (before rounding): " << parameters.doubles("exp_cells")/parameters.doubles("scaling_factor") <<std::endl;
     if (parameters.ints("number_of_cells") == 0){ parameters.ints("number_of_cells") = 1; } // make sure there is at least one cell
 
-    //parameters.ints("number_of_cells") = 100; // hardcode number of initial cells for testing only
 
+    //parameters.ints("number_of_cells") = 5; // hardcode number of initial cells - for testing only
+    //exit(-1); // stops running here - only for testing parameter values
 	
+
 	// put any custom code to set non-homogeneous initial conditions or 
 	// extra Dirichlet nodes here. 
 	
 	// initialize BioFVM 
-	//microenvironment.bulk_supply_rate_function = my_bulk_supply_rate_function;
 	
 	initialize_microenvironment(); 	
-
-	//microenvironment.simulate_bulk_sources_and_sinks()
-	//microenvironment.bulk_supply_rate_function = my_bulk_supply_rate_function;
-
 	return; 
 }
-void my_bulk_supply_rate_function(
-    BioFVM::Microenvironment* pMicroenvironment,
-    int voxel_index,
-    std::vector<double>* write_destination)
-{
-    (*write_destination)[0] = 0.01;
-    return;
-}
+
 void setup_tissue( void )
 {
 	double Xmin = microenvironment.mesh.bounding_box[0]; 
@@ -252,7 +258,6 @@ void setup_tissue( void )
 
     /* agents have not been added from the file but do want them
        create some of each agent type */
-std::cout<<"HERE 2"<<std::endl;
 
     if(!isFibreFromFile){
         Cell* pC;
@@ -295,27 +300,25 @@ std::cout<<"HERE 2"<<std::endl;
             }
         }
     }
+    else { // ML: if fibres are loaded in by file, add in the T cells (not in the files)
+        Cell* pC;
+        std::vector<double> position = {0, 0, 0};
+        Cell_Definition *pCD = cell_definitions_by_index[0];
+        for (int n = 0; n < parameters.ints("number_of_cells"); n++) {
+            position[0] = Xmin + UniformRandom() * Xrange;
+            position[1] = Ymin + UniformRandom() * Yrange;
+            position[2] = Zmin + UniformRandom() * Zrange;
+
+            pC = create_cell(*pCD);    
+            pC->assign_position(position);
+        }
+    }
 
     remove_physimess_out_of_bounds_fibres();
     
-    // std::cout << std::endl;
 }
 
-std::vector<std::string> paint_by_cell_pressure( Cell* pCell ){
 
-	std::vector< std::string > output( 0);
-	int color = (int) round( ((pCell->state.simple_pressure) / 10) * 255 );
-	if(color > 255){
-		color = 255;
-	}
-	char szTempString [128];
-	sprintf( szTempString , "rgb(%u,0,%u)", color, 255 - color);
-	output.push_back( std::string("black") );
-	output.push_back( szTempString );
-	output.push_back( szTempString );
-	output.push_back( szTempString );
-	return output;
-}
 std::vector<std::string> paint_by_cell_type_and_state( Cell* pCell )
 {
     
@@ -335,7 +338,7 @@ std::vector<std::string> paint_by_cell_type_and_state( Cell* pCell )
 
     // Get values
     double activation_time_thresh = parameters.doubles("activation_time_thresh");
-    double max_time = 1000;
+    double max_time = 3000;
 
     int color = (int) round( ((time_attached)/max_time) * 255 );
     //std::cout<<"time attached: "<<time_attached<<" col: "<<color<<std::endl;
@@ -353,12 +356,10 @@ std::vector<std::string> paint_by_cell_type_and_state( Cell* pCell )
 		
 
 }
+
 std::vector<std::string> my_coloring_function( Cell* pCell )
 { 
-	 return paint_by_cell_type_and_state(pCell); 
-
-   
-	
+	return paint_by_cell_type_and_state(pCell); 
 }
 std::string my_coloring_function_for_substrate( double concentration, double max_conc, double min_conc )
 { return paint_by_density_percentage( concentration,  max_conc,  min_conc); }
@@ -372,22 +373,7 @@ void my_cellcount_function(char* string){
 
 	sprintf( string , "%lu cells, %u fibres" , all_cells->size()-nb_fibres, nb_fibres ); 
 }
-void fibre_time_secretion_function( Cell* pCell, Phenotype& phenotype, double dt )
-{
-    static int substrate_index = microenvironment.find_density_index( "nutrient" ); // your substrate name
 
-    double t = PhysiCell_globals.current_time;
-
-    double v   = parameters.doubles("v"); 
-    double q   = parameters.doubles("q");
-
-    static double rod_length = pCell->custom_data["fibre_length"];
-    static double rod_radius = pCell->custom_data["fibre_radius"];
-    double rho = parameters.doubles("rod_mass")/(rod_length*M_PI*rod_radius*rod_radius); // mass density of a single rod (ug/um^3) 
-
-    phenotype.secretion.secretion_rates[substrate_index] = v*q*rho*exp(-v*t);
-    return;
-}
 void custom_function( Cell* pCell, Phenotype& phenotype, double dt )
 { return; }
 
@@ -400,16 +386,26 @@ void phenotype_function( Cell* pCell, Phenotype& phenotype, double dt )
 
     static int t_type   = get_cell_definition("cell").type; 
 	int k_state = pCell->custom_data.find_variable_index("state");
-
+	double THRESH_MIN = parameters.doubles("activation_time_thresh");
+ 
     if( pCell->type == t_type && pCell->custom_data[k_state] > 0.5) // if cell is already active
     {
 		cell_proliferation_based_on_IL2(pCell, phenotype, dt);
-		check_cell_contact(pCell,phenotype,dt);
+		//check_cell_contact(pCell,phenotype,dt);
 	}
-	else if(pCell->type == t_type) // cell is a T cell but not active
-	{
-		check_cell_contact(pCell,phenotype,dt);
-	}
+	else if(pCell->type == t_type && pCell->custom_data["attached_time"]>THRESH_MIN )
+    {
+        pCell->custom_data[k_state] = 1.0;
+
+		//#pragma omp critical
+		//std::cout << "[Tcell ACTIVATED]" << " id =" << pCell->ID << " total_time =" << pCell->custom_data["attached_time"] << " t =" << PhysiCell_globals.current_time << std::endl;
+    }
+    //if(pCell->type == t_type) // cell is a T cell but not active
+	//{
+	//	check_cell_contact(pCell,phenotype,dt);
+	//	check_for_activation(pCell,phenotype,dt);
+	//}
+		
 	return; 
 }
 
@@ -426,11 +422,14 @@ void cell_proliferation_based_on_IL2( Cell* pCell , Phenotype& phenotype, double
 	double IP    = parameters.doubles("IP")/(microenvironment.mesh.bounding_box[5]-microenvironment.mesh.bounding_box[2]); // divide by width in z direction to get volumetric density
 
 	phenotype.cycle.data.transition_rate( cycle_start_index, cycle_end_index ) = rPmax*IL2/(IP+IL2);
-	
-	//std::cout<<phenotype.cycle.data.transition_rate( cycle_start_index, cycle_end_index )<<std::endl;
 
+    //std::cout<<"IL2 conc: "<<IL2<<std::endl;
+    //std::cout<<"I_P: "<<IP<<std::endl;
+    //std::cout<<"rpmax scale: "<<IL2/(IP+IL2)<<std::endl;
+	
 	return;
 }
+
 
 void check_cell_contact( Cell* pCell , Phenotype& phenotype, double dt )
 {
@@ -446,11 +445,12 @@ void check_cell_contact( Cell* pCell , Phenotype& phenotype, double dt )
     pCell->custom_data[k_touch] = 0.0;
 
     auto nearby = pCell->nearby_interacting_cells();
+
  
     //set migration speed at 1 to start
     
     // AJ ADDED 
-    pCell->phenotype.motility.migration_speed = 1;
+    //pCell->phenotype.motility.migration_speed = 1;
 
     for( Cell* other : nearby )
     {
@@ -461,11 +461,12 @@ void check_cell_contact( Cell* pCell , Phenotype& phenotype, double dt )
         double dz = pCell->position[2] - other->position[2];
         double d  = std::sqrt(dx*dx + dy*dy + dz*dz);
 
-        double contact_dist = pCell->phenotype.geometry.radius + other->phenotype.geometry.radius;
+        double contact_dist = pCell->phenotype.geometry.radius + other->custom_data["fibre_radius"];
 
         if( d <= contact_dist )
         {
             pCell->custom_data[k_touch] = 1.0;
+        	pCell->custom_data[k_time] += dt;
 
             // add that if the cells are in contact, the speed of the T cells slows to almost nothing
             //pCell->phenotype.motility.migration_speed = 0.05;
@@ -478,35 +479,55 @@ void check_cell_contact( Cell* pCell , Phenotype& phenotype, double dt )
         }
       
     }
-    
-              
-
-    if( pCell->custom_data[k_touch] > 0.5 )
-     {
-        pCell->custom_data[k_time] += dt;
-
-        if( pCell->custom_data[k_state] < 0.5 )
-        {
-
-            const double THRESH_MIN = parameters.doubles("activation_time_thresh");
-
-            if( pCell->custom_data[k_time] >= THRESH_MIN )
-            {
-                pCell->custom_data[k_state] = 1.0;
-
-                #pragma omp critical
-                std::cout
-              << "[Tcell ACTIVATED]"
-                << " id =" << pCell->ID
-                << " total_time =" << pCell->custom_data[k_time]
-               << " t =" << PhysiCell_globals.current_time
-               << std::endl;
-            }
-        }
-    }
+	
 	return;
 }
 
+void check_for_activation( Cell* pCell , Phenotype& phenotype, double dt )
+{
+	
+    int k_time  = pCell->custom_data.find_variable_index("attached_time");
+    int k_state = pCell->custom_data.find_variable_index("state");
+	double THRESH_MIN = parameters.doubles("activation_time_thresh");
+
+	if( pCell->custom_data[k_time] >= THRESH_MIN )
+	{
+		pCell->custom_data[k_state] = 1.0;
+
+		#pragma omp critical
+		std::cout
+		<< "[Tcell ACTIVATED]"
+		<< " id =" << pCell->ID
+		<< " total_time =" << pCell->custom_data[k_time]
+		<< " t =" << PhysiCell_globals.current_time
+		<< std::endl;
+	}
+    
+	return;
+}
+void contact_function( Cell* pMe, Phenotype& phenoMe , Cell* pOther, Phenotype& phenoOther , double dt )
+{ return; } 
+
+void fibre_time_secretion_function( Cell* pCell, Phenotype& phenotype, double dt )
+{
+    static int substrate_index = microenvironment.find_density_index( "nutrient" ); // your substrate name
+
+    double t = PhysiCell_globals.current_time;
+
+    double v   = parameters.doubles("v"); 
+    double q   = parameters.doubles("q");
+
+    static double rod_length = pCell->custom_data["f_length"]; 
+    static double rod_radius = pCell->custom_data["fibre_radius"];
+    static double rod_mass = pCell->custom_data["rod_mass"]; 
+    double rho = rod_mass/(rod_length*3.14159265358979*rod_radius*rod_radius); // mass density of a single rod (ug/um^3) 
+
+    phenotype.secretion.secretion_rates[substrate_index] = v*q*rho*exp(-v*t);
+	if (phenotype.secretion.secretion_rates[substrate_index]<0)
+	{std::cout<<"error in secretion rate"<<std::endl;}
+
+    return;
+}
 
 void tcell_division_function( Cell* pParent, Cell* pDaughter )
 {
@@ -521,47 +542,27 @@ void tcell_division_function( Cell* pParent, Cell* pDaughter )
     int k_time  = pParent->custom_data.find_variable_index("attached_time");
     int k_touch = pParent->custom_data.find_variable_index("touching_rod");
 
-    if( k_state < 0 ) return;
+    if( k_state < 0 )
+	{
+		std::cout<<"k_state index zero?"<<std::endl;
+		return;
+	}
 
     if( pParent->custom_data[k_state] > 0.5 )
     {
         pDaughter->custom_data[k_state] = 0.0;
 
-        if( k_time  >= 0 ) pDaughter->custom_data[k_time]  = 0.0;
-        if( k_touch >= 0 ) pDaughter->custom_data[k_touch] = 0.0;
+        if( pDaughter->custom_data[k_time]  >= 0 ) pDaughter->custom_data[k_time]  = 0.0;
+        if( pDaughter->custom_data[k_touch] >= 0 ) pDaughter->custom_data[k_touch] = 0.0;
 
-        #pragma omp critical
-        std::cerr << "[DIV] parent active -> daughter naive | parent id="
-                  << pParent->ID << " daughter id=" << pDaughter->ID
-                  << " t=" << PhysiCell_globals.current_time << "\n";
+        //#pragma omp critical
+        //std::cerr << "[DIV] parent active -> daughter naive | parent id=" << pParent->ID << " daughter id=" << pDaughter->ID << " t=" << PhysiCell_globals.current_time << "\n";
     }
 
-    clamp_cell_to_domain(pParent);
-    clamp_cell_to_domain(pDaughter);
-	
+   // clamp_cell_to_domain(pParent);
+   // clamp_cell_to_domain(pDaughter);
+	return;
 }
-
-void clamp_cell_to_domain(Cell* c)
-{
-    double domain_x_min = microenvironment.mesh.bounding_box[0];
-    double domain_y_min = microenvironment.mesh.bounding_box[1];
-    double domain_z_min = microenvironment.mesh.bounding_box[2];
-
-    double domain_x_max = microenvironment.mesh.bounding_box[3];
-    double domain_y_max = microenvironment.mesh.bounding_box[4];
-    double domain_z_max = microenvironment.mesh.bounding_box[5];
-
-    if (c->position[0] < domain_x_min) c->position[0] = domain_x_min;
-    if (c->position[0] > domain_x_max) c->position[0] = domain_x_max;
-
-    if (c->position[1] < domain_y_min) c->position[1] = domain_y_min;
-    if (c->position[1] > domain_y_max) c->position[1] = domain_y_max;
-
-    if (c->position[2] < domain_z_min) c->position[2] = domain_z_min;
-    if (c->position[2] > domain_z_max) c->position[2] = domain_z_max;
-}
-void contact_function( Cell* pMe, Phenotype& phenoMe , Cell* pOther, Phenotype& phenoOther , double dt )
-{ return; } 
 
 Cell* instantiate_physimess_cell() { return new PhysiMeSS_Cell; }
 Cell* instantiate_physimess_fibre() { return new PhysiMeSS_Fibre; }
@@ -570,8 +571,6 @@ Cell* instantiate_physimess_cell_custom_degrade() { return new PhysiMeSS_Cell_Cu
 
 void PhysiMeSS_Cell_Custom_Degrade::degrade_fibre(PhysiMeSS_Fibre* pFibre)
 {
-
-	/*
 	// Here this version of the degrade function takes cell pressure into account in the degradation rate
     double distance = 0.0;
     pFibre->nearest_point_on_fibre(position, displacement);
@@ -611,6 +610,5 @@ void PhysiMeSS_Cell_Custom_Degrade::degrade_fibre(PhysiMeSS_Fibre* pFibre)
                 }
             }
         }
-		*/
     // }
 }
