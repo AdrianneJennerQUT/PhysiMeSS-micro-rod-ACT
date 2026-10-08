@@ -20,7 +20,7 @@ R_max = floor(min(dom_bounds(1,2)-dom_bounds(1,1),dom_bounds(2,2)-dom_bounds(2,1
 num_r = 200; % number of radii to check
 r_vals = linspace(0,R_max-dr,num_r); % radii to check
 
-for tindex = 1:40 %this should be the total number of tcounts - leaving as 40 for now. 
+for tindex = 1:61 %this should be the total number of tcounts - leaving as 40 for now. 
     agent_pos = baserun_1.Tcellagent_position_matrix{tindex}(:,1:2); % agent positions (x,y)
     g_cc = zeros(num_r,1); % pair correlation function for T cells to T cells
     num_cells = length(agent_pos);
