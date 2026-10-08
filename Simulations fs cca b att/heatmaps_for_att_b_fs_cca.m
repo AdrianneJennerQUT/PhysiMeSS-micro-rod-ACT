@@ -1903,3 +1903,333 @@ clim([clim_min clim_max])
 
 cmap = cmocean('deep'); 
 colormap(cmap)
+
+%% Mason's clustering metric
+
+%%fs 1 cca 0.4
+[cluster_cells_att_1hr_b_01_fs1_cca04, g_cc] = clustering_metric(att_1hr_b_01_fs1_cca04_data);
+[cluster_cells_att_3hrs_b_01_fs1_cca04, g_cc] = clustering_metric(att_3hrs_b_01_fs1_cca04_data);
+[cluster_cells_att_6hrs_b_01_fs1_cca04, g_cc] = clustering_metric(att_6hrs_b_01_fs1_cca04_data);
+[cluster_cells_att_9hrs_b_01_fs1_cca04, g_cc] = clustering_metric(att_9hrs_b_01_fs1_cca04_data);
+[cluster_cells_att_12hrs_b_01_fs1_cca04, g_cc] = clustering_metric(att_12hrs_b_01_fs1_cca04_data);
+[cluster_cells_att_18hrs_b_01_fs1_cca04, g_cc] = clustering_metric(att_18hrs_b_01_fs1_cca04_data);
+[cluster_cells_att_1day_b_01_fs1_cca04, g_cc] = clustering_metric(att_1day_b_01_fs1_cca04_data);
+[cluster_cells_att_2days_b_01_fs1_cca04, g_cc] = clustering_metric(att_2days_b_01_fs1_cca04_data);
+
+[cluster_cells_att_1hr_b_03_fs1_cca04, g_cc] = clustering_metric(att_1hr_b_03_fs1_cca04_data);
+[cluster_cells_att_3hrs_b_03_fs1_cca04, g_cc] = clustering_metric(att_3hrs_b_03_fs1_cca04_data);
+[cluster_cells_att_6hrs_b_03_fs1_cca04, g_cc] = clustering_metric(att_6hrs_b_03_fs1_cca04_data);
+[cluster_cells_att_9hrs_b_03_fs1_cca04, g_cc] = clustering_metric(att_9hrs_b_03_fs1_cca04_data);
+[cluster_cells_att_12hrs_b_03_fs1_cca04, g_cc] = clustering_metric(att_12hrs_b_03_fs1_cca04_data);
+[cluster_cells_att_18hrs_b_03_fs1_cca04, g_cc] = clustering_metric(att_18hrs_b_03_fs1_cca04_data);
+[cluster_cells_att_1day_b_03_fs1_cca04, g_cc] = clustering_metric(att_1day_b_03_fs1_cca04_data);
+[cluster_cells_att_2days_b_03_fs1_cca04, g_cc] = clustering_metric(att_2days_b_03_fs1_cca04_data);
+
+[cluster_cells_att_1hr_b_08_fs1_cca04, g_cc] = clustering_metric(att_1hr_b_08_fs1_cca04_data);
+[cluster_cells_att_3hrs_b_08_fs1_cca04, g_cc] = clustering_metric(att_3hrs_b_08_fs1_cca04_data);
+[cluster_cells_att_6hrs_b_08_fs1_cca04, g_cc] = clustering_metric(att_6hrs_b_08_fs1_cca04_data);
+[cluster_cells_att_9hrs_b_08_fs1_cca04, g_cc] = clustering_metric(att_9hrs_b_08_fs1_cca04_data);
+[cluster_cells_att_12hrs_b_08_fs1_cca04, g_cc] = clustering_metric(att_12hrs_b_08_fs1_cca04_data);
+[cluster_cells_att_18hrs_b_08_fs1_cca04, g_cc] = clustering_metric(att_18hrs_b_08_fs1_cca04_data);
+[cluster_cells_att_1day_b_08_fs1_cca04, g_cc] = clustering_metric(att_1day_b_08_fs1_cca04_data);
+[cluster_cells_att_2days_b_08_fs1_cca04, g_cc] = clustering_metric(att_2days_b_08_fs1_cca04_data);
+
+cluster_cells_mat_fs1_cca04 = [cluster_cells_att_1hr_b_01_fs1_cca04(end),cluster_cells_att_3hrs_b_01_fs1_cca04(end),...
+    cluster_cells_att_6hrs_b_01_fs1_cca04(end),cluster_cells_att_9hrs_b_01_fs1_cca04(end),...
+    cluster_cells_att_12hrs_b_01_fs1_cca04(end),cluster_cells_att_18hrs_b_01_fs1_cca04(end),...
+    cluster_cells_att_1day_b_01_fs1_cca04(end),cluster_cells_att_2days_b_01_fs1_cca04(end);...
+    cluster_cells_att_1hr_b_03_fs1_cca04(end),cluster_cells_att_3hrs_b_03_fs1_cca04(end),...
+    cluster_cells_att_6hrs_b_03_fs1_cca04(end),cluster_cells_att_9hrs_b_03_fs1_cca04(end),...
+    cluster_cells_att_12hrs_b_03_fs1_cca04(end),cluster_cells_att_18hrs_b_03_fs1_cca04(end),...
+    cluster_cells_att_1day_b_03_fs1_cca04(end),cluster_cells_att_2days_b_03_fs1_cca04(end);...
+    cluster_cells_att_1hr_b_08_fs1_cca04(end),cluster_cells_att_3hrs_b_08_fs1_cca04(end),...
+    cluster_cells_att_6hrs_b_08_fs1_cca04(end),cluster_cells_att_9hrs_b_08_fs1_cca04(end),...
+    cluster_cells_att_12hrs_b_08_fs1_cca04(end),cluster_cells_att_18hrs_b_08_fs1_cca04(end),...
+    cluster_cells_att_1day_b_08_fs1_cca04(end),cluster_cells_att_2days_b_08_fs1_cca04(end)];
+
+% fs 1 cca 2
+[cluster_cells_att_1hr_b_01_fs1_cca2, g_cc] = clustering_metric(att_1hr_b_01_fs1_cca2_data);
+[cluster_cells_att_3hrs_b_01_fs1_cca2, g_cc] = clustering_metric(att_3hrs_b_01_fs1_cca2_data);
+[cluster_cells_att_6hrs_b_01_fs1_cca2, g_cc] = clustering_metric(att_6hrs_b_01_fs1_cca2_data);
+[cluster_cells_att_9hrs_b_01_fs1_cca2, g_cc] = clustering_metric(att_9hrs_b_01_fs1_cca2_data);
+[cluster_cells_att_12hrs_b_01_fs1_cca2, g_cc] = clustering_metric(att_12hrs_b_01_fs1_cca2_data);
+[cluster_cells_att_18hrs_b_01_fs1_cca2, g_cc] = clustering_metric(att_18hrs_b_01_fs1_cca2_data);
+[cluster_cells_att_1day_b_01_fs1_cca2, g_cc] = clustering_metric(att_1day_b_01_fs1_cca2_data);
+[cluster_cells_att_2days_b_01_fs1_cca2, g_cc] = clustering_metric(att_2days_b_01_fs1_cca2_data);
+
+[cluster_cells_att_1hr_b_03_fs1_cca2, g_cc] = clustering_metric(att_1hr_b_03_fs1_cca2_data);
+[cluster_cells_att_3hrs_b_03_fs1_cca2, g_cc] = clustering_metric(att_3hrs_b_03_fs1_cca2_data);
+[cluster_cells_att_6hrs_b_03_fs1_cca2, g_cc] = clustering_metric(att_6hrs_b_03_fs1_cca2_data);
+[cluster_cells_att_9hrs_b_03_fs1_cca2, g_cc] = clustering_metric(att_9hrs_b_03_fs1_cca2_data);
+[cluster_cells_att_12hrs_b_03_fs1_cca2, g_cc] = clustering_metric(att_12hrs_b_03_fs1_cca2_data);
+[cluster_cells_att_18hrs_b_03_fs1_cca2, g_cc] = clustering_metric(att_18hrs_b_03_fs1_cca2_data);
+[cluster_cells_att_1day_b_03_fs1_cca2, g_cc] = clustering_metric(att_1day_b_03_fs1_cca2_data);
+[cluster_cells_att_2days_b_03_fs1_cca2, g_cc] = clustering_metric(att_2days_b_03_fs1_cca2_data);
+
+[cluster_cells_att_1hr_b_08_fs1_cca2, g_cc] = clustering_metric(att_1hr_b_08_fs1_cca2_data);
+[cluster_cells_att_3hrs_b_08_fs1_cca2, g_cc] = clustering_metric(att_3hrs_b_08_fs1_cca2_data);
+[cluster_cells_att_6hrs_b_08_fs1_cca2, g_cc] = clustering_metric(att_6hrs_b_08_fs1_cca2_data);
+[cluster_cells_att_9hrs_b_08_fs1_cca2, g_cc] = clustering_metric(att_9hrs_b_08_fs1_cca2_data);
+[cluster_cells_att_12hrs_b_08_fs1_cca2, g_cc] = clustering_metric(att_12hrs_b_08_fs1_cca2_data);
+[cluster_cells_att_18hrs_b_08_fs1_cca2, g_cc] = clustering_metric(att_18hrs_b_08_fs1_cca2_data);
+[cluster_cells_att_1day_b_08_fs1_cca2, g_cc] = clustering_metric(att_1day_b_08_fs1_cca2_data);
+[cluster_cells_att_2days_b_08_fs1_cca2, g_cc] = clustering_metric(att_2days_b_08_fs1_cca2_data);
+
+cluster_cells_mat_fs1_cca2 = [cluster_cells_att_1hr_b_01_fs1_cca2(end),cluster_cells_att_3hrs_b_01_fs1_cca2(end),...
+    cluster_cells_att_6hrs_b_01_fs1_cca2(end),cluster_cells_att_9hrs_b_01_fs1_cca2(end),...
+    cluster_cells_att_12hrs_b_01_fs1_cca2(end),cluster_cells_att_18hrs_b_01_fs1_cca2(end),...
+    cluster_cells_att_1day_b_01_fs1_cca2(end),cluster_cells_att_2days_b_01_fs1_cca2(end);...
+    cluster_cells_att_1hr_b_03_fs1_cca2(end),cluster_cells_att_3hrs_b_03_fs1_cca2(end),...
+    cluster_cells_att_6hrs_b_03_fs1_cca2(end),cluster_cells_att_9hrs_b_03_fs1_cca2(end),...
+    cluster_cells_att_12hrs_b_03_fs1_cca2(end),cluster_cells_att_18hrs_b_03_fs1_cca2(end),...
+    cluster_cells_att_1day_b_03_fs1_cca2(end),cluster_cells_att_2days_b_03_fs1_cca2(end);...
+    cluster_cells_att_1hr_b_08_fs1_cca2(end),cluster_cells_att_3hrs_b_08_fs1_cca2(end),...
+    cluster_cells_att_6hrs_b_08_fs1_cca2(end),cluster_cells_att_9hrs_b_08_fs1_cca2(end),...
+    cluster_cells_att_12hrs_b_08_fs1_cca2(end),cluster_cells_att_18hrs_b_08_fs1_cca2(end),...
+    cluster_cells_att_1day_b_08_fs1_cca2(end),cluster_cells_att_2days_b_08_fs1_cca2(end)];
+
+% fs 1 cca 5
+[cluster_cells_att_1hr_b_01_fs1_cca5, g_cc] = clustering_metric(att_1hr_b_01_fs1_cca5_data);
+[cluster_cells_att_3hrs_b_01_fs1_cca5, g_cc] = clustering_metric(att_3hrs_b_01_fs1_cca5_data);
+[cluster_cells_att_6hrs_b_01_fs1_cca5, g_cc] = clustering_metric(att_6hrs_b_01_fs1_cca5_data);
+[cluster_cells_att_9hrs_b_01_fs1_cca5, g_cc] = clustering_metric(att_9hrs_b_01_fs1_cca5_data);
+[cluster_cells_att_12hrs_b_01_fs1_cca5, g_cc] = clustering_metric(att_12hrs_b_01_fs1_cca5_data);
+[cluster_cells_att_18hrs_b_01_fs1_cca5, g_cc] = clustering_metric(att_18hrs_b_01_fs1_cca5_data);
+[cluster_cells_att_1day_b_01_fs1_cca5, g_cc] = clustering_metric(att_1day_b_01_fs1_cca5_data);
+[cluster_cells_att_2days_b_01_fs1_cca5, g_cc] = clustering_metric(att_2days_b_01_fs1_cca5_data);
+
+[cluster_cells_att_1hr_b_03_fs1_cca5, g_cc] = clustering_metric(att_1hr_b_03_fs1_cca5_data);
+[cluster_cells_att_3hrs_b_03_fs1_cca5, g_cc] = clustering_metric(att_3hrs_b_03_fs1_cca5_data);
+[cluster_cells_att_6hrs_b_03_fs1_cca5, g_cc] = clustering_metric(att_6hrs_b_03_fs1_cca5_data);
+[cluster_cells_att_9hrs_b_03_fs1_cca5, g_cc] = clustering_metric(att_9hrs_b_03_fs1_cca5_data);
+[cluster_cells_att_12hrs_b_03_fs1_cca5, g_cc] = clustering_metric(att_12hrs_b_03_fs1_cca5_data);
+[cluster_cells_att_18hrs_b_03_fs1_cca5, g_cc] = clustering_metric(att_18hrs_b_03_fs1_cca5_data);
+[cluster_cells_att_1day_b_03_fs1_cca5, g_cc] = clustering_metric(att_1day_b_03_fs1_cca5_data);
+[cluster_cells_att_2days_b_03_fs1_cca5, g_cc] = clustering_metric(att_2days_b_03_fs1_cca5_data);
+
+[cluster_cells_att_1hr_b_08_fs1_cca5, g_cc] = clustering_metric(att_1hr_b_08_fs1_cca5_data);
+[cluster_cells_att_3hrs_b_08_fs1_cca5, g_cc] = clustering_metric(att_3hrs_b_08_fs1_cca5_data);
+[cluster_cells_att_6hrs_b_08_fs1_cca5, g_cc] = clustering_metric(att_6hrs_b_08_fs1_cca5_data);
+[cluster_cells_att_9hrs_b_08_fs1_cca5, g_cc] = clustering_metric(att_9hrs_b_08_fs1_cca5_data);
+[cluster_cells_att_12hrs_b_08_fs1_cca5, g_cc] = clustering_metric(att_12hrs_b_08_fs1_cca5_data);
+[cluster_cells_att_18hrs_b_08_fs1_cca5, g_cc] = clustering_metric(att_18hrs_b_08_fs1_cca5_data);
+[cluster_cells_att_1day_b_08_fs1_cca5, g_cc] = clustering_metric(att_1day_b_08_fs1_cca5_data);
+[cluster_cells_att_2days_b_08_fs1_cca5, g_cc] = clustering_metric(att_2days_b_08_fs1_cca5_data);
+
+cluster_cells_mat_fs1_cca5 = [cluster_cells_att_1hr_b_01_fs1_cca5(end),cluster_cells_att_3hrs_b_01_fs1_cca5(end),...
+    cluster_cells_att_6hrs_b_01_fs1_cca5(end),cluster_cells_att_9hrs_b_01_fs1_cca5(end),...
+    cluster_cells_att_12hrs_b_01_fs1_cca5(end),cluster_cells_att_18hrs_b_01_fs1_cca5(end),...
+    cluster_cells_att_1day_b_01_fs1_cca5(end),cluster_cells_att_2days_b_01_fs1_cca5(end);...
+    cluster_cells_att_1hr_b_03_fs1_cca5(end),cluster_cells_att_3hrs_b_03_fs1_cca5(end),...
+    cluster_cells_att_6hrs_b_03_fs1_cca5(end),cluster_cells_att_9hrs_b_03_fs1_cca5(end),...
+    cluster_cells_att_12hrs_b_03_fs1_cca5(end),cluster_cells_att_18hrs_b_03_fs1_cca5(end),...
+    cluster_cells_att_1day_b_03_fs1_cca5(end),cluster_cells_att_2days_b_03_fs1_cca5(end);...
+    cluster_cells_att_1hr_b_08_fs1_cca5(end),cluster_cells_att_3hrs_b_08_fs1_cca5(end),...
+    cluster_cells_att_6hrs_b_08_fs1_cca5(end),cluster_cells_att_9hrs_b_08_fs1_cca5(end),...
+    cluster_cells_att_12hrs_b_08_fs1_cca5(end),cluster_cells_att_18hrs_b_08_fs1_cca5(end),...
+    cluster_cells_att_1day_b_08_fs1_cca5(end),cluster_cells_att_2days_b_08_fs1_cca5(end)];
+
+%%fs 1 cca 0.4
+[cluster_cells_att_1hr_b_01_fs10_cca04, g_cc] = clustering_metric(att_1hr_b_01_fs10_cca04_data);
+[cluster_cells_att_3hrs_b_01_fs10_cca04, g_cc] = clustering_metric(att_3hrs_b_01_fs10_cca04_data);
+[cluster_cells_att_6hrs_b_01_fs10_cca04, g_cc] = clustering_metric(att_6hrs_b_01_fs10_cca04_data);
+[cluster_cells_att_9hrs_b_01_fs10_cca04, g_cc] = clustering_metric(att_9hrs_b_01_fs10_cca04_data);
+[cluster_cells_att_12hrs_b_01_fs10_cca04, g_cc] = clustering_metric(att_12hrs_b_01_fs10_cca04_data);
+[cluster_cells_att_18hrs_b_01_fs10_cca04, g_cc] = clustering_metric(att_18hrs_b_01_fs10_cca04_data);
+[cluster_cells_att_1day_b_01_fs10_cca04, g_cc] = clustering_metric(att_1day_b_01_fs10_cca04_data);
+[cluster_cells_att_2days_b_01_fs10_cca04, g_cc] = clustering_metric(att_2days_b_01_fs10_cca04_data);
+
+[cluster_cells_att_1hr_b_03_fs10_cca04, g_cc] = clustering_metric(att_1hr_b_03_fs10_cca04_data);
+[cluster_cells_att_3hrs_b_03_fs10_cca04, g_cc] = clustering_metric(att_3hrs_b_03_fs10_cca04_data);
+[cluster_cells_att_6hrs_b_03_fs10_cca04, g_cc] = clustering_metric(att_6hrs_b_03_fs10_cca04_data);
+[cluster_cells_att_9hrs_b_03_fs10_cca04, g_cc] = clustering_metric(att_9hrs_b_03_fs10_cca04_data);
+[cluster_cells_att_12hrs_b_03_fs10_cca04, g_cc] = clustering_metric(att_12hrs_b_03_fs10_cca04_data);
+[cluster_cells_att_18hrs_b_03_fs10_cca04, g_cc] = clustering_metric(att_18hrs_b_03_fs10_cca04_data);
+[cluster_cells_att_1day_b_03_fs10_cca04, g_cc] = clustering_metric(att_1day_b_03_fs10_cca04_data);
+[cluster_cells_att_2days_b_03_fs10_cca04, g_cc] = clustering_metric(att_2days_b_03_fs10_cca04_data);
+
+[cluster_cells_att_1hr_b_08_fs10_cca04, g_cc] = clustering_metric(att_1hr_b_08_fs10_cca04_data);
+[cluster_cells_att_3hrs_b_08_fs10_cca04, g_cc] = clustering_metric(att_3hrs_b_08_fs10_cca04_data);
+[cluster_cells_att_6hrs_b_08_fs10_cca04, g_cc] = clustering_metric(att_6hrs_b_08_fs10_cca04_data);
+[cluster_cells_att_9hrs_b_08_fs10_cca04, g_cc] = clustering_metric(att_9hrs_b_08_fs10_cca04_data);
+[cluster_cells_att_12hrs_b_08_fs10_cca04, g_cc] = clustering_metric(att_12hrs_b_08_fs10_cca04_data);
+[cluster_cells_att_18hrs_b_08_fs10_cca04, g_cc] = clustering_metric(att_18hrs_b_08_fs10_cca04_data);
+[cluster_cells_att_1day_b_08_fs10_cca04, g_cc] = clustering_metric(att_1day_b_08_fs10_cca04_data);
+[cluster_cells_att_2days_b_08_fs10_cca04, g_cc] = clustering_metric(att_2days_b_08_fs10_cca04_data);
+
+cluster_cells_mat_fs10_cca04 = [cluster_cells_att_1hr_b_01_fs10_cca04(end),cluster_cells_att_3hrs_b_01_fs10_cca04(end),...
+    cluster_cells_att_6hrs_b_01_fs10_cca04(end),cluster_cells_att_9hrs_b_01_fs10_cca04(end),...
+    cluster_cells_att_12hrs_b_01_fs10_cca04(end),cluster_cells_att_18hrs_b_01_fs10_cca04(end),...
+    cluster_cells_att_1day_b_01_fs10_cca04(end),cluster_cells_att_2days_b_01_fs10_cca04(end);...
+    cluster_cells_att_1hr_b_03_fs10_cca04(end),cluster_cells_att_3hrs_b_03_fs10_cca04(end),...
+    cluster_cells_att_6hrs_b_03_fs10_cca04(end),cluster_cells_att_9hrs_b_03_fs10_cca04(end),...
+    cluster_cells_att_12hrs_b_03_fs10_cca04(end),cluster_cells_att_18hrs_b_03_fs10_cca04(end),...
+    cluster_cells_att_1day_b_03_fs10_cca04(end),cluster_cells_att_2days_b_03_fs10_cca04(end);...
+    cluster_cells_att_1hr_b_08_fs10_cca04(end),cluster_cells_att_3hrs_b_08_fs10_cca04(end),...
+    cluster_cells_att_6hrs_b_08_fs10_cca04(end),cluster_cells_att_9hrs_b_08_fs10_cca04(end),...
+    cluster_cells_att_12hrs_b_08_fs10_cca04(end),cluster_cells_att_18hrs_b_08_fs10_cca04(end),...
+    cluster_cells_att_1day_b_08_fs10_cca04(end),cluster_cells_att_2days_b_08_fs10_cca04(end)];
+
+% fs 1 cca 2
+[cluster_cells_att_1hr_b_01_fs10_cca2, g_cc] = clustering_metric(att_1hr_b_01_fs10_cca2_data);
+[cluster_cells_att_3hrs_b_01_fs10_cca2, g_cc] = clustering_metric(att_3hrs_b_01_fs10_cca2_data);
+[cluster_cells_att_6hrs_b_01_fs10_cca2, g_cc] = clustering_metric(att_6hrs_b_01_fs10_cca2_data);
+[cluster_cells_att_9hrs_b_01_fs10_cca2, g_cc] = clustering_metric(att_9hrs_b_01_fs10_cca2_data);
+[cluster_cells_att_12hrs_b_01_fs10_cca2, g_cc] = clustering_metric(att_12hrs_b_01_fs10_cca2_data);
+[cluster_cells_att_18hrs_b_01_fs10_cca2, g_cc] = clustering_metric(att_18hrs_b_01_fs10_cca2_data);
+[cluster_cells_att_1day_b_01_fs10_cca2, g_cc] = clustering_metric(att_1day_b_01_fs10_cca2_data);
+[cluster_cells_att_2days_b_01_fs10_cca2, g_cc] = clustering_metric(att_2days_b_01_fs10_cca2_data);
+
+[cluster_cells_att_1hr_b_03_fs10_cca2, g_cc] = clustering_metric(att_1hr_b_03_fs10_cca2_data);
+[cluster_cells_att_3hrs_b_03_fs10_cca2, g_cc] = clustering_metric(att_3hrs_b_03_fs10_cca2_data);
+[cluster_cells_att_6hrs_b_03_fs10_cca2, g_cc] = clustering_metric(att_6hrs_b_03_fs10_cca2_data);
+[cluster_cells_att_9hrs_b_03_fs10_cca2, g_cc] = clustering_metric(att_9hrs_b_03_fs10_cca2_data);
+[cluster_cells_att_12hrs_b_03_fs10_cca2, g_cc] = clustering_metric(att_12hrs_b_03_fs10_cca2_data);
+[cluster_cells_att_18hrs_b_03_fs10_cca2, g_cc] = clustering_metric(att_18hrs_b_03_fs10_cca2_data);
+[cluster_cells_att_1day_b_03_fs10_cca2, g_cc] = clustering_metric(att_1day_b_03_fs10_cca2_data);
+[cluster_cells_att_2days_b_03_fs10_cca2, g_cc] = clustering_metric(att_2days_b_03_fs10_cca2_data);
+
+[cluster_cells_att_1hr_b_08_fs10_cca2, g_cc] = clustering_metric(att_1hr_b_08_fs10_cca2_data);
+[cluster_cells_att_3hrs_b_08_fs10_cca2, g_cc] = clustering_metric(att_3hrs_b_08_fs10_cca2_data);
+[cluster_cells_att_6hrs_b_08_fs10_cca2, g_cc] = clustering_metric(att_6hrs_b_08_fs10_cca2_data);
+[cluster_cells_att_9hrs_b_08_fs10_cca2, g_cc] = clustering_metric(att_9hrs_b_08_fs10_cca2_data);
+[cluster_cells_att_12hrs_b_08_fs10_cca2, g_cc] = clustering_metric(att_12hrs_b_08_fs10_cca2_data);
+[cluster_cells_att_18hrs_b_08_fs10_cca2, g_cc] = clustering_metric(att_18hrs_b_08_fs10_cca2_data);
+[cluster_cells_att_1day_b_08_fs10_cca2, g_cc] = clustering_metric(att_1day_b_08_fs10_cca2_data);
+[cluster_cells_att_2days_b_08_fs10_cca2, g_cc] = clustering_metric(att_2days_b_08_fs10_cca2_data);
+
+cluster_cells_mat_fs10_cca2 = [cluster_cells_att_1hr_b_01_fs10_cca2(end),cluster_cells_att_3hrs_b_01_fs10_cca2(end),...
+    cluster_cells_att_6hrs_b_01_fs10_cca2(end),cluster_cells_att_9hrs_b_01_fs10_cca2(end),...
+    cluster_cells_att_12hrs_b_01_fs10_cca2(end),cluster_cells_att_18hrs_b_01_fs10_cca2(end),...
+    cluster_cells_att_1day_b_01_fs10_cca2(end),cluster_cells_att_2days_b_01_fs10_cca2(end);...
+    cluster_cells_att_1hr_b_03_fs10_cca2(end),cluster_cells_att_3hrs_b_03_fs10_cca2(end),...
+    cluster_cells_att_6hrs_b_03_fs10_cca2(end),cluster_cells_att_9hrs_b_03_fs10_cca2(end),...
+    cluster_cells_att_12hrs_b_03_fs10_cca2(end),cluster_cells_att_18hrs_b_03_fs10_cca2(end),...
+    cluster_cells_att_1day_b_03_fs10_cca2(end),cluster_cells_att_2days_b_03_fs10_cca2(end);...
+    cluster_cells_att_1hr_b_08_fs10_cca2(end),cluster_cells_att_3hrs_b_08_fs10_cca2(end),...
+    cluster_cells_att_6hrs_b_08_fs10_cca2(end),cluster_cells_att_9hrs_b_08_fs10_cca2(end),...
+    cluster_cells_att_12hrs_b_08_fs10_cca2(end),cluster_cells_att_18hrs_b_08_fs10_cca2(end),...
+    cluster_cells_att_1day_b_08_fs10_cca2(end),cluster_cells_att_2days_b_08_fs10_cca2(end)];
+
+% fs 1 cca 5
+[cluster_cells_att_1hr_b_01_fs10_cca5, g_cc] = clustering_metric(att_1hr_b_01_fs10_cca5_data);
+[cluster_cells_att_3hrs_b_01_fs10_cca5, g_cc] = clustering_metric(att_3hrs_b_01_fs10_cca5_data);
+[cluster_cells_att_6hrs_b_01_fs10_cca5, g_cc] = clustering_metric(att_6hrs_b_01_fs10_cca5_data);
+[cluster_cells_att_9hrs_b_01_fs10_cca5, g_cc] = clustering_metric(att_9hrs_b_01_fs10_cca5_data);
+[cluster_cells_att_12hrs_b_01_fs10_cca5, g_cc] = clustering_metric(att_12hrs_b_01_fs10_cca5_data);
+[cluster_cells_att_18hrs_b_01_fs10_cca5, g_cc] = clustering_metric(att_18hrs_b_01_fs10_cca5_data);
+[cluster_cells_att_1day_b_01_fs10_cca5, g_cc] = clustering_metric(att_1day_b_01_fs10_cca5_data);
+[cluster_cells_att_2days_b_01_fs10_cca5, g_cc] = clustering_metric(att_2days_b_01_fs10_cca5_data);
+
+[cluster_cells_att_1hr_b_03_fs10_cca5, g_cc] = clustering_metric(att_1hr_b_03_fs10_cca5_data);
+[cluster_cells_att_3hrs_b_03_fs10_cca5, g_cc] = clustering_metric(att_3hrs_b_03_fs10_cca5_data);
+[cluster_cells_att_6hrs_b_03_fs10_cca5, g_cc] = clustering_metric(att_6hrs_b_03_fs10_cca5_data);
+[cluster_cells_att_9hrs_b_03_fs10_cca5, g_cc] = clustering_metric(att_9hrs_b_03_fs10_cca5_data);
+[cluster_cells_att_12hrs_b_03_fs10_cca5, g_cc] = clustering_metric(att_12hrs_b_03_fs10_cca5_data);
+[cluster_cells_att_18hrs_b_03_fs10_cca5, g_cc] = clustering_metric(att_18hrs_b_03_fs10_cca5_data);
+[cluster_cells_att_1day_b_03_fs10_cca5, g_cc] = clustering_metric(att_1day_b_03_fs10_cca5_data);
+[cluster_cells_att_2days_b_03_fs10_cca5, g_cc] = clustering_metric(att_2days_b_03_fs10_cca5_data);
+
+[cluster_cells_att_1hr_b_08_fs10_cca5, g_cc] = clustering_metric(att_1hr_b_08_fs10_cca5_data);
+[cluster_cells_att_3hrs_b_08_fs10_cca5, g_cc] = clustering_metric(att_3hrs_b_08_fs10_cca5_data);
+[cluster_cells_att_6hrs_b_08_fs10_cca5, g_cc] = clustering_metric(att_6hrs_b_08_fs10_cca5_data);
+[cluster_cells_att_9hrs_b_08_fs10_cca5, g_cc] = clustering_metric(att_9hrs_b_08_fs10_cca5_data);
+[cluster_cells_att_12hrs_b_08_fs10_cca5, g_cc] = clustering_metric(att_12hrs_b_08_fs10_cca5_data);
+[cluster_cells_att_18hrs_b_08_fs10_cca5, g_cc] = clustering_metric(att_18hrs_b_08_fs1_cca5_data);
+[cluster_cells_att_1day_b_08_fs10_cca5, g_cc] = clustering_metric(att_1day_b_08_fs10_cca5_data);
+[cluster_cells_att_2days_b_08_fs10_cca5, g_cc] = clustering_metric(att_2days_b_08_fs10_cca5_data);
+
+cluster_cells_mat_fs10_cca5 = [cluster_cells_att_1hr_b_01_fs10_cca5(end),cluster_cells_att_3hrs_b_01_fs10_cca5(end),...
+    cluster_cells_att_6hrs_b_01_fs10_cca5(end),cluster_cells_att_9hrs_b_01_fs10_cca5(end),...
+    cluster_cells_att_12hrs_b_01_fs10_cca5(end),cluster_cells_att_18hrs_b_01_fs10_cca5(end),...
+    cluster_cells_att_1day_b_01_fs10_cca5(end),cluster_cells_att_2days_b_01_fs10_cca5(end);...
+    cluster_cells_att_1hr_b_03_fs10_cca5(end),cluster_cells_att_3hrs_b_03_fs10_cca5(end),...
+    cluster_cells_att_6hrs_b_03_fs10_cca5(end),cluster_cells_att_9hrs_b_03_fs10_cca5(end),...
+    cluster_cells_att_12hrs_b_03_fs10_cca5(end),cluster_cells_att_18hrs_b_03_fs10_cca5(end),...
+    cluster_cells_att_1day_b_03_fs10_cca5(end),cluster_cells_att_2days_b_03_fs10_cca5(end);...
+    cluster_cells_att_1hr_b_08_fs10_cca5(end),cluster_cells_att_3hrs_b_08_fs10_cca5(end),...
+    cluster_cells_att_6hrs_b_08_fs10_cca5(end),cluster_cells_att_9hrs_b_08_fs10_cca5(end),...
+    cluster_cells_att_12hrs_b_08_fs10_cca5(end),cluster_cells_att_18hrs_b_08_fs10_cca5(end),...
+    cluster_cells_att_1day_b_08_fs10_cca5(end),cluster_cells_att_2days_b_08_fs10_cca5(end)];
+%%
+
+
+clim_min = min(min([cluster_cells_mat_fs1_cca04,...
+    cluster_cells_mat_fs1_cca2,...
+    cluster_cells_mat_fs1_cca5,...
+    cluster_cells_mat_fs10_cca04,...
+    cluster_cells_mat_fs10_cca2,...
+    cluster_cells_mat_fs10_cca5]));
+
+clim_max = max(max([cluster_cells_mat_fs1_cca04,...
+    cluster_cells_mat_fs1_cca2,...
+    cluster_cells_mat_fs1_cca5,...
+    cluster_cells_mat_fs10_cca04,...
+    cluster_cells_mat_fs10_cca2,...
+    cluster_cells_mat_fs10_cca5]));
+
+figure
+subplot(2,3,1)
+h = heatmap(cluster_cells_mat_fs10_cca04)
+h.XData = {'1hr','3hr','6hr','9hr','12hr','18hr','1d','2d'}
+h.YData = {'0.1','0.3','0.8'}
+title('fs 10 cca 0.4')
+set(gca,'FontSize',18)
+xlabel('ATT')
+ylabel('b')
+clim([clim_min clim_max])
+
+subplot(2,3,2)
+h = heatmap(cluster_cells_mat_fs10_cca2)
+h.XData = {'1hr','3hr','6hr','9hr','12hr','18hr','1d','2d'}
+h.YData = {'0.1','0.3','0.8'}
+title('fs 10 cca 2')
+set(gca,'FontSize',18)
+xlabel('ATT')
+ylabel('b')
+clim([clim_min clim_max])
+
+subplot(2,3,3)
+h = heatmap(cluster_cells_mat_fs10_cca5)
+h.XData = {'1hr','3hr','6hr','9hr','12hr','18hr','1d','2d'}
+h.YData = {'0.1','0.3','0.8'}
+title('fs 10 cca 5')
+set(gca,'FontSize',18)
+xlabel('ATT')
+ylabel('b')
+clim([clim_min clim_max])
+
+subplot(2,3,4)
+h = heatmap(cluster_cells_mat_fs1_cca04)
+h.XData = {'1hr','3hr','6hr','9hr','12hr','18hr','1d','2d'}
+h.YData = {'0.1','0.3','0.8'}
+title('fs 1 cca 0.4')
+set(gca,'FontSize',18)
+xlabel('ATT')
+ylabel('b')
+clim([clim_min clim_max])
+
+subplot(2,3,5)
+h = heatmap(cluster_cells_mat_fs1_cca2)
+h.XData = {'1hr','3hr','6hr','9hr','12hr','18hr','1d','2d'}
+h.YData = {'0.1','0.3','0.8'}
+title('fs 1 cca 2')
+set(gca,'FontSize',18)
+xlabel('ATT')
+ylabel('b')
+clim([clim_min clim_max])
+
+subplot(2,3,6)
+h = heatmap(cluster_cells_mat_fs1_cca5)
+h.XData = {'1hr','3hr','6hr','9hr','12hr','18hr','1d','2d'}
+h.YData = {'0.1','0.3','0.8'}
+title('fs 1 cca 5')
+set(gca,'FontSize',18)
+xlabel('ATT')
+ylabel('b')
+clim([clim_min clim_max])
+
+
+
+cmap = cmocean('deep'); 
+colormap(cmap)
