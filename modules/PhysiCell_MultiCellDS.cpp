@@ -770,6 +770,7 @@ void add_PhysiCell_cells_to_open_xml_pugi_v2( pugi::xml_document& xml_dom, std::
 	// storing data as cols (each column is a cell)
 	for( int i=0; i < number_of_data_entries ; i++ )
 	{
+		
 		pCell = (*all_cells)[i]; 
 
 		int writes = 0; 
@@ -987,7 +988,10 @@ void add_PhysiCell_cells_to_open_xml_pugi_v2( pugi::xml_document& xml_dom, std::
 // custom 
 		// custom scalar variables 
 		for( int j=0 ; j < (*all_cells)[0]->custom_data.variables.size(); j++ )
-		{ std::fwrite( &( pCell->custom_data.variables[j].value ) , sizeof(double) , 1 , fp ); }
+		{ 
+			std::fwrite( &( pCell->custom_data.variables[j].value ) , sizeof(double) , 1 , fp ); 
+		
+    	}
 
 		// custom vector variables 
 		for( int j=0 ; j < (*all_cells)[0]->custom_data.vector_variables.size(); j++ )
