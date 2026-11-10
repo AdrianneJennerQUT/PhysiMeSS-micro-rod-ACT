@@ -132,6 +132,7 @@ void create_cell_types( void )
 	cell_defaults.functions.custom_cell_rule = custom_function; 
 	cell_defaults.functions.contact_function = contact_function; 
 	cell_defaults.functions.cell_division_function = tcell_division_function; 
+	cell_defaults.functions.calculate_distance_to_membrane = custom_distance_to_domain; 
     
 	for (auto* pCD: *getFibreCellDefinitions()){
 		pCD->functions.instantiate_cell = instantiate_physimess_fibre;
@@ -251,7 +252,8 @@ void setup_tissue( void )
             /* fibre positions are given by csv
                assign fibre orientation and test whether out of bounds */
             isFibreFromFile = true;
-			static_cast<PhysiMeSS_Fibre*>((*all_cells)[i])->assign_fibre_orientation();
+			static_cast<PhysiMeSS_Fibre*>((*all_cells)[i])->assign_fibre_orientation();    
+            //static_cast<PhysiMeSS_Fibre*>((*all_cells)[i])->check_out_of_bounds((*all_cells)[i]->position);
 			
         } 
     }
@@ -380,6 +382,9 @@ void custom_function( Cell* pCell, Phenotype& phenotype, double dt )
 void phenotype_function( Cell* pCell, Phenotype& phenotype, double dt )
 { 
 
+    // adding code to bump cells back into the domain if they go outside
+    check_cell_position_bump_back(pCell);
+
     static int rod_type = get_cell_definition("ecm").type;
 
     //std::cout<<pCell->type<<std::endl;
@@ -408,6 +413,38 @@ void phenotype_function( Cell* pCell, Phenotype& phenotype, double dt )
 		
 	return; 
 }
+
+void check_cell_position_bump_back(Cell* pCell)
+{
+    
+    double Xmin = microenvironment.mesh.bounding_box[0]; 
+    double Xmax = microenvironment.mesh.bounding_box[3]; 
+    double Ymin = microenvironment.mesh.bounding_box[1]; 
+    double Ymax = microenvironment.mesh.bounding_box[4];
+
+    /*
+    std::cout<<pCell->position<<std::endl;
+
+    if(pCell->position[0]<Xmin || pCell->position[0]>Xmax
+     || pCell->position[1]>Ymax || pCell->position[1]<Ymin)
+    {  
+        std::cout<<"cell outside domain: "<<pCell->position<<std::endl;
+        
+        if(pCell->position[0]<Xmin)
+        {pCell->position[0] = Xmin+1;}
+        if(pCell->position[0]>Xmax)
+        {pCell->position[0] = Xmax-1;}
+        if(pCell->position[1]<Ymin)
+        {pCell->position[1] = Ymin+1;}
+        if(pCell->position[1]>Ymax)
+        {pCell->position[1] = Ymax-1;}
+
+    }   
+    */
+
+    return;
+}
+
 
 void cell_proliferation_based_on_IL2( Cell* pCell , Phenotype& phenotype, double dt )
 {
@@ -486,6 +523,7 @@ void check_cell_contact( Cell* pCell , Phenotype& phenotype, double dt )
 void check_for_activation( Cell* pCell , Phenotype& phenotype, double dt )
 {
 	
+
     int k_time  = pCell->custom_data.find_variable_index("attached_time");
     int k_state = pCell->custom_data.find_variable_index("state");
 	double THRESH_MIN = parameters.doubles("activation_time_thresh");
@@ -526,11 +564,13 @@ void fibre_time_secretion_function( Cell* pCell, Phenotype& phenotype, double dt
 	if (phenotype.secretion.secretion_rates[substrate_index]<0)
 	{std::cout<<"error in secretion rate"<<std::endl;}
 
+
     return;
 }
 
 void tcell_division_function( Cell* pParent, Cell* pDaughter )
 {
+
 
     static int t_type   = get_cell_definition("cell").type; 
 	
@@ -612,3 +652,146 @@ void PhysiMeSS_Cell_Custom_Degrade::degrade_fibre(PhysiMeSS_Fibre* pFibre)
         }
     // }
 }
+
+// just copying the default "distance_to_domain_edge" standardfunction, but you can modify it to do whatever you want.
+double custom_distance_to_domain(Cell* pCell, Phenotype& phenotype, double dummy)
+{
+	static double tolerance = 1e-7;
+	static double one_over_sqrt_2 = 0.70710678118;
+	static double one_over_sqrt_3 = 0.57735026919; 
+	
+		
+	double min_distance = 9e99; 
+	int nearest_boundary = -1; 
+	
+	// check against xL and xU
+	double temp_distance = pCell->position[0] - microenvironment.mesh.bounding_box[0]; 
+	if( temp_distance < min_distance )
+	{
+		min_distance = temp_distance; 
+		nearest_boundary = 0; 
+	}
+	temp_distance = microenvironment.mesh.bounding_box[3] - pCell->position[0]; 
+	if( temp_distance < min_distance )
+	{
+		min_distance = temp_distance; 
+		nearest_boundary = 1; 
+	}
+	
+	// check against yL and yU
+	temp_distance = pCell->position[1] - microenvironment.mesh.bounding_box[1]; 
+	if( temp_distance < min_distance )
+	{
+		min_distance = temp_distance; 
+		nearest_boundary = 2; 
+	}
+	temp_distance = microenvironment.mesh.bounding_box[4] - pCell->position[1]; 
+	if( temp_distance < min_distance )
+	{
+		min_distance = temp_distance; 
+		nearest_boundary = 3; 
+	}	
+	
+	if( default_microenvironment_options.simulate_2D == false )
+	{
+		// if in 3D, check against zL and zU
+		temp_distance = pCell->position[2] - microenvironment.mesh.bounding_box[2]; 
+		if( temp_distance < min_distance )
+		{
+			min_distance = temp_distance; 
+			nearest_boundary = 4; 
+		}
+		temp_distance = microenvironment.mesh.bounding_box[5] - pCell->position[2]; 
+		if( temp_distance < min_distance )
+		{
+			min_distance = temp_distance; 
+			nearest_boundary = 5; 
+		}			
+		
+		// check for 3D exceptions 
+		
+		// lines 
+		if( fabs( (pCell->position[0]) - (pCell->position[1]) ) < tolerance && 
+			fabs( (pCell->position[1]) - (pCell->position[2]) ) < tolerance && 
+			fabs( (pCell->position[0]) - (pCell->position[2]) ) < tolerance )
+		{
+			if( pCell->position[0] > 0 )
+			{
+				if( pCell->position[0] > 0 && pCell->position[1] > 0 )
+				{ pCell->displacement = { -one_over_sqrt_3 , -one_over_sqrt_3 , -one_over_sqrt_3 }; }
+				if( pCell->position[0] < 0 && pCell->position[1] > 0 )
+				{ pCell->displacement = { one_over_sqrt_3 , -one_over_sqrt_3 , -one_over_sqrt_3 }; }
+				
+				if( pCell->position[0] > 0 && pCell->position[1] < 0 )
+				{ pCell->displacement = { -one_over_sqrt_3 , one_over_sqrt_3 , -one_over_sqrt_3 }; }
+				if( pCell->position[0] < 0 && pCell->position[1] < 0 )
+				{ pCell->displacement = { one_over_sqrt_3 , one_over_sqrt_3 , -one_over_sqrt_3 }; }
+			} 
+			else
+			{
+				if( pCell->position[0] > 0 && pCell->position[1] > 0 )
+				{ pCell->displacement = { -one_over_sqrt_3 , -one_over_sqrt_3 , one_over_sqrt_3 }; }
+				if( pCell->position[0] < 0 && pCell->position[1] > 0 )
+				{ pCell->displacement = { one_over_sqrt_3 , -one_over_sqrt_3 , one_over_sqrt_3 }; }
+				
+				if( pCell->position[0] > 0 && pCell->position[1] < 0 )
+				{ pCell->displacement = { -one_over_sqrt_3 , one_over_sqrt_3 , one_over_sqrt_3 }; }
+				if( pCell->position[0] < 0 && pCell->position[1] < 0 )
+				{ pCell->displacement = { one_over_sqrt_3 , one_over_sqrt_3 , one_over_sqrt_3 }; }				
+			}
+			return min_distance; 
+		}
+		
+		// planes - let's not worry for today 
+		
+	}
+	else
+	{
+		// check for 2D  exceptions 
+		
+		if( fabs( (pCell->position[0]) - (pCell->position[1]) ) < tolerance )
+		{
+			if( pCell->position[0] > 0 && pCell->position[1] > 0 )
+			{ pCell->displacement = { -one_over_sqrt_2 , -one_over_sqrt_2 , 0 }; }
+			if( pCell->position[0] < 0 && pCell->position[1] > 0 )
+			{ pCell->displacement = { one_over_sqrt_2 , -one_over_sqrt_2 , 0 }; }
+			
+			if( pCell->position[0] > 0 && pCell->position[1] < 0 )
+			{ pCell->displacement = { -one_over_sqrt_2 , one_over_sqrt_2 , 0 }; }
+			if( pCell->position[0] < 0 && pCell->position[1] < 0 )
+			{ pCell->displacement = { one_over_sqrt_2 , one_over_sqrt_2 , 0 }; }
+			return min_distance; 
+		}
+	}
+	
+	//std::cout << "nearest_boundary = " << nearest_boundary << std::endl;	 // dummy debug print
+
+	// no exceptions 
+	switch(nearest_boundary)
+	{
+		case 0:
+			pCell->displacement = {1,0,0}; 
+			return min_distance; 
+		case 1:
+			pCell->displacement = {-1,0,0}; 
+			return min_distance;
+		case 2:
+			pCell->displacement = {0,1,0}; 
+			return min_distance; 
+		case 3: 
+			pCell->displacement = {0,-1,0}; 
+			return min_distance; 
+		case 4: 
+			pCell->displacement = {0,0,1}; 
+			return min_distance; 
+		case 5: 
+			pCell->displacement = {0,0,-1}; 
+			return min_distance; 
+		default:
+			pCell->displacement = {0,0,0};
+			return 9e99; 
+	}
+	
+	pCell->displacement = {0,0,0};
+	return 9e99; 
+}	

@@ -99,6 +99,8 @@ void check_for_activation( Cell* pCell , Phenotype& phenotype, double dt );
 void fibre_time_secretion_function( Cell* pCell, Phenotype& phenotype, double dt );
 
 void tcell_division_function( Cell* pParent, Cell* pDaughter );
+void check_cell_position_bump_back(Cell* pCell);
+double custom_distance_to_domain(Cell* pCell, Phenotype& phenotype, double dummy);
 
 std::vector<std::string> paint_by_cell_type_and_state( Cell* pCell );
 
