@@ -112,12 +112,12 @@ void PhysiMeSS_Fibre::assign_fibre_orientation()
 
 void PhysiMeSS_Fibre::check_out_of_bounds(std::vector<double>& position)
 {
-    double Xmin = BioFVM::get_default_microenvironment()->mesh.bounding_box[0]; 
-	double Ymin = BioFVM::get_default_microenvironment()->mesh.bounding_box[1]; 
+    double Xmin = BioFVM::get_default_microenvironment()->mesh.bounding_box[0]+20; 
+	double Ymin = BioFVM::get_default_microenvironment()->mesh.bounding_box[1]+20; 
 	double Zmin = BioFVM::get_default_microenvironment()->mesh.bounding_box[2]; 
 
-	double Xmax = BioFVM::get_default_microenvironment()->mesh.bounding_box[3]; 
-	double Ymax = BioFVM::get_default_microenvironment()->mesh.bounding_box[4]; 
+	double Xmax = BioFVM::get_default_microenvironment()->mesh.bounding_box[3]-20; 
+	double Ymax = BioFVM::get_default_microenvironment()->mesh.bounding_box[4]-20; 
 	double Zmax = BioFVM::get_default_microenvironment()->mesh.bounding_box[5]; 
 	
 	if( default_microenvironment_options.simulate_2D == true )
@@ -131,6 +131,7 @@ void PhysiMeSS_Fibre::check_out_of_bounds(std::vector<double>& position)
     double xe = position[0] + this->mLength * this->state.orientation[0];
     double ys = position[1] - this->mLength * this->state.orientation[1];
     double ye = position[1] + this->mLength * this->state.orientation[1];
+
     double zs = 0.0;
     double ze = 0.0;
     if (default_microenvironment_options.simulate_2D) {
@@ -149,7 +150,56 @@ void PhysiMeSS_Fibre::check_out_of_bounds(std::vector<double>& position)
                 break after 10 failures
                 It needs re-writing at some stage to handle the 3D case properly */
 
-    if (this->custom_data["anisotropic_fibres"]) {
+                // AJ added code to push fibres back in if they go outside bounding box
+    double dif = 0.0;
+    if (this->custom_data["push_fibres_in"]) {
+        if (default_microenvironment_options.simulate_2D) {
+          
+            if (xs < Xmin)
+            {
+                dif = Xmin - xs;
+                this->position[0] +=dif;
+            }
+            if (xe < Xmin)
+            { 
+                dif = Xmin - xe;
+                this->position[0] +=dif;
+            }
+            if (xs > Xmax )
+            {
+                    dif = xs - Xmax;
+                this->position[0] -=dif;
+            }
+            if (xe > Xmax )
+            {
+                    dif = xe - Xmax;
+                this->position[0] -=dif;
+            }
+            if (ys < Ymin)
+            {
+                dif = Ymin - ys;
+                this->position[1] +=dif;
+            }
+            if (ye < Ymin)
+            { 
+                dif = Ymin - ye;
+                this->position[1] +=dif;
+            }
+            if (ys > Ymax )
+            {
+                    dif = ys - Ymax;
+                this->position[1] -=dif;
+            }
+            if (ye > Ymax )
+            {
+                    dif = ye - Ymax;
+                this->position[1] -=dif;
+            }
+        
+            
+        }
+    }
+    else if (this->custom_data["anisotropic_fibres"]) {
         if (xs < Xmin || xe > Xmax || xe < Xmin || xs > Xmax ||
             ys < Ymin || ye > Ymax || ye < Ymin || ys > Ymax) {
             fail_count = 10;
@@ -157,9 +207,12 @@ void PhysiMeSS_Fibre::check_out_of_bounds(std::vector<double>& position)
     }
     else{
         if (default_microenvironment_options.simulate_2D) {
-            while (fail_count < 10) {
+            while (fail_count < 100) 
+            {
+                std::cout<<"fail "<<fail_count<<std::endl;
                 if (xs < Xmin || xe > Xmax || xe < Xmin || xs > Xmax ||
-                    ys < Ymin || ye > Ymax || ye < Ymin || ys > Ymax) {
+                    ys < Ymin || ye > Ymax || ye < Ymin || ys > Ymax) 
+                {
                     fail_count++;
                     this->state.orientation = PhysiCell::UniformOnUnitCircle();
                     xs = position[0] - mLength * this->state.orientation[0];
@@ -167,12 +220,15 @@ void PhysiMeSS_Fibre::check_out_of_bounds(std::vector<double>& position)
                     ys = position[1] - mLength * this->state.orientation[1];
                     ye = position[1] + mLength * this->state.orientation[1];
                 }
-                else {
+
+
+                else 
+                {
                     break;
                 }
             }
         }
-
+    
         if (!default_microenvironment_options.simulate_2D) {
             while (fail_count < 10) {
                 if (xs < Xmin || xe > Xmax || xe < Xmin || xs > Xmax ||
@@ -194,8 +250,6 @@ void PhysiMeSS_Fibre::check_out_of_bounds(std::vector<double>& position)
         }
     }
 }
-
-
 void PhysiMeSS_Fibre::add_potentials_from_cell(PhysiMeSS_Cell* cell) 
 {
     // fibres only get pushed or rotated by motile cells

@@ -146,6 +146,7 @@ void physimess_update_cell_velocity( Cell* pCell, Phenotype& phenotype, double d
 
 void physimess_mechanics( double dt ) 
 {    
+    
     static double dt_tolerance = 0.001 * dt; 
     if(fabs(((PhysiCell_globals.current_time - last_update_time)) - dt) < dt_tolerance)
     {
@@ -198,7 +199,19 @@ void physimess_mechanics( double dt )
                 static_cast<PhysiMeSS_Fibre*>(pC)->add_crosslinks();
             }
         }
+
+        // AJ ADDED TO CHECK IF FIBRE IS ON THE BOUNDARY AND PUSH FIBRE BACK IN
+        #pragma omp parallel for
+        for( int i=0; i < (*all_cells).size(); i++ )
+        {
+            Cell* pC = (*all_cells)[i];
+            if (isFibre(pC)) {
+                static_cast<PhysiMeSS_Fibre*>(pC)->check_out_of_bounds(pC->position);
+            }
+        }
+
     }
+    
 }
 
 
