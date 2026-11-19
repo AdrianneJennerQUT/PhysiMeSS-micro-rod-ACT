@@ -293,7 +293,17 @@ void PhysiMeSS_Fibre::add_potentials_from_cell(PhysiMeSS_Cell* cell)
                 // add the relative pressure contribution NOT SURE IF NEEDED
                 state.simple_pressure += (temp_r / simple_pressure_scale);
 
-                double effective_repulsion = sqrt(phenotype.mechanics.cell_cell_repulsion_strength *
+                // AJ added scaling to repulsion strength as a function of X_crosslink_count    
+
+                double eta_50 = PhysiCell::parameters.doubles("eta_50");
+                double eta_max = PhysiCell::parameters.doubles("eta_max");
+                double scaling_fibre_movement = eta_max*eta_50*eta_50*eta_50*eta_50/(eta_50*eta_50*eta_50*eta_50+X_crosslink_count*X_crosslink_count*X_crosslink_count*X_crosslink_count);
+
+                //std::cout<<"links: "<<X_crosslink_count<<" scalar: "<<scaling_fibre_movement<<std::endl;
+
+
+                //AJ changed the following line to include scaling_fibre_movement
+                double effective_repulsion = sqrt(scaling_fibre_movement*phenotype.mechanics.cell_cell_repulsion_strength *
                                                     (*cell).phenotype.mechanics.cell_cell_repulsion_strength);
                 temp_r *= effective_repulsion;
 
