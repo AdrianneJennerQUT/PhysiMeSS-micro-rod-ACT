@@ -227,8 +227,8 @@
           <fibre_pushing units="none" description="flag for fibre pushing">1.0</fibre_pushing>
           <fibre_sticky units="none" description="measure of how easy it is to move a fibre">1.0</fibre_sticky> <!-- was 1.0 -->
           <fibre_rotation units="none" description="flag for fibre rotation">0.0</fibre_rotation>
-          <vel_adhesion units="" description="cell velocity parallel to fibre">0.5</vel_adhesion> <!-- was 0.6 -->
-          <vel_contact units="" description="cell velocity orthogonal to fibre">0.5</vel_contact> <!-- was 0.1 -->
+          <vel_adhesion units="" description="cell velocity parallel to fibre">1</vel_adhesion> <!-- was 0.6 -->
+          <vel_contact units="" description="cell velocity orthogonal to fibre">0.5</vel_contact> <!-- was 0.1 and 0.5 -->
           <cell_velocity_max units="" description="max cell velocity">1.0</cell_velocity_max> <!-- was 1.0-->         
           <state units="" description="activation status">0</state> <!-- was 0 -->
           <touching_rod units="" description="boolean touching rod">0.0</touching_rod>
@@ -306,7 +306,7 @@
 
           <mechanics>
             <cell_cell_adhesion_strength units="micron/min">0.4</cell_cell_adhesion_strength> <!-- was 0.4 -->
-            <cell_cell_repulsion_strength units="micron/min">10.0</cell_cell_repulsion_strength>
+            <cell_cell_repulsion_strength units="micron/min">10</cell_cell_repulsion_strength>
             <relative_maximum_adhesion_distance units="dimensionless">1.25</relative_maximum_adhesion_distance>
             <cell_adhesion_affinities>
                 <cell_adhesion_affinity name="cell">1.0</cell_adhesion_affinity>
@@ -430,6 +430,8 @@
       <q type="double" units="ng/microg">6.2</q> <!-- IL-2 mass to micro-rod mass ratio; 6.2 in Mason's paper -->
       <!-- <rod_mass type="double" units="microg">0</rod_mass> --> <!-- total mass of all rods in simulation, initialise at 0 to be incremented in custom.cpp; was 1.972e-6 -->
 
+      <eta_50 type="double" units="/min">5</eta_50> <!-- half effect in eta function -->
+      <eta_max type=" " units="ng/um^2">1</eta_max> <!-- max value of eta function -->
 
       <activation_time_thresh type="double" units="" description="cumulative touch time before activation">720</activation_time_thresh>
 
