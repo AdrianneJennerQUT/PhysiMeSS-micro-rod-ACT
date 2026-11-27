@@ -69,6 +69,7 @@ void physimess_update_cell_velocity( Cell* pCell, Phenotype& phenotype, double d
             static_cast<PhysiMeSS_Fibre*>(pCell)->X_crosslink_count = static_cast<PhysiMeSS_Fibre*>(pCell)->fibres_crosslinkers.size();
         }
 
+        pCell->custom_data["fibre_crosslink_counter"] = static_cast<PhysiMeSS_Fibre*>(pCell)->fibres_crosslinkers.size();
     }
 
     // std::cout << " AGENT " << pCell->type_name << " " << pCell->ID << " has " ;
