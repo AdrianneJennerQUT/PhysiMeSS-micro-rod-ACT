@@ -163,17 +163,17 @@ void setup_microenvironment( void )
 	// set domain parameters 
 
     // code to compute x_max, y_max, and number_of_fibres from Brynn's digitised scaffold 
-    microenvironment.mesh.bounding_box[0] = 0; microenvironment.mesh.bounding_box[3] = default_microenvironment_options.X_range[1]; // reassign x_max and y_max in here since these default to 0.5 for some reason
-    microenvironment.mesh.bounding_box[1] = 0; microenvironment.mesh.bounding_box[4] = default_microenvironment_options.Y_range[1];
-    double Xmax = microenvironment.mesh.bounding_box[3]; double Ymax = microenvironment.mesh.bounding_box[4]; 
+    microenvironment.mesh.bounding_box[0] = default_microenvironment_options.X_range[0]; microenvironment.mesh.bounding_box[3] = default_microenvironment_options.X_range[1]; // reassign x_max and y_max in here since these default to 0.5 for some reason
+    microenvironment.mesh.bounding_box[1] = default_microenvironment_options.Y_range[0]; microenvironment.mesh.bounding_box[4] = default_microenvironment_options.Y_range[1];
+    double Xmax = microenvironment.mesh.bounding_box[3]-20; double Ymax = microenvironment.mesh.bounding_box[4]-20; // subtract 20 for buffer zone around domain 
     std::cout<< "Maximum x and y: " << Xmax <<std::endl;
 
     // load in scaffold spreadsheet and add up the mass of rods (code stolen from PhysiCell_geometry -> load_cells_csv_v1)
-    pugi::xml_node node = physicell_config_root.child( "initial_conditions" ).child( "cell_positions" ); // find where the file name is defined
-    std::string folder = xml_get_string_value( node, "folder" ); 
-	std::string filename = xml_get_string_value( node, "filename" ); 
+    pugi::xml_node node = physicell_config_root.child("initial_conditions").child("cell_positions"); // find where the file name is defined
+    std::string folder = xml_get_string_value(node, "folder"); 
+	std::string filename = xml_get_string_value(node, "filename"); 
 	std::string input_filename = folder + "/" + filename; // define file name/directory
-    std::ifstream file( input_filename, std::ios::in ); // open file
+    std::ifstream file(input_filename, std::ios::in); // open file
     std::string line;
     double rod_mass = 0;
 	while (std::getline(file, line)) // for each row in the file
