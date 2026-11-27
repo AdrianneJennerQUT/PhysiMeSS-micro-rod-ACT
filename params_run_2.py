@@ -1,9 +1,3 @@
-# This script provides simple parameter exploration functionality. The script creates
-# a new folder (subdirectory) for each set of parameters, makes changes to a default 
-# configuration (.xml) file using specified parameter values (in an accompanying .txt file),
-# copies the new config file into the new folder, then
-# runs the simulation (in the background) which writes results into the new folder.
-# 
 
 import xml.etree.ElementTree as ET
 from shutil import copyfile
@@ -13,6 +7,7 @@ import subprocess
 from itertools import product
 import time
 import shutil
+import cairosvg
 
 # print(len(sys.argv))
 if (len(sys.argv) < 2):
@@ -27,19 +22,29 @@ else:
 
 # ==========================================================================================================
 # ==========================================================================================================
-max_time = 0.1 # set maximum simulation time (days)
+max_time = 4 # set maximum simulation time (days)
+
 full_data = "false" # store full data ("true" or "false")
+save_interval = max_time; # set the interval to save full data and SVGs (days)
+im_scale = 1; # scale the SVG by im_scale when converting to PNG
+
+scaffold = "small"; # choose scaffold size (small = scaffold_1, large = scaffold_large)
 
 folder = "sim_outputs" # choose folder name
 
-param_names = ["Cccr", "Rccr", "b"] # parameter names (used to name sub-folders)
-var_names = ["cell_definition[@name='cell'].phenotype.mechanics.cell_cell_repulsion_strength", "cell_definition[@name='ecm'].phenotype.mechanics.cell_cell_repulsion_strength", "migration_bias"] # parameter variable names in PhysiCell_settings.xml
-param_vals = [[0.01, 15], [2, 10], [0, 0.6]] # parameter values (list of lists)
+param_names = ["b", "emax", "e50_"] # parameter names (used to name sub-folders)
+var_names = ["migration_bias", "eta_max", "eta_50"] # parameter variable names in PhysiCell_settings.xml
+param_vals = [[0.7, 0.8], [1, 2, 5, 10, 20], [0, 2, 5, 10, 15, 20]] # parameter values (list of lists)
 
 # list of variable names: 
-#  CCR for cells:  cell_definition[@name='cell'].phenotype.mechanics.cell_cell_repulsion_strength
-#  CCR for rods:   cell_definition[@name='ecm'].phenotype.mechanics.cell_cell_repulsion_strength
-#  bias b:         migration_bias
+#  seed:                random_seed
+#  CCR for cells:       cell_definition[@name='cell'].phenotype.mechanics.cell_cell_repulsion_strength
+#  CCR for rods:        cell_definition[@name='ecm'].phenotype.mechanics.cell_cell_repulsion_strength
+#  diffusion coeff D:   diffusion_coefficient
+#  bias b:              migration_bias
+#  maximum eta value:   eta_max
+#  half-max eta:        eta_50
+#  secretion rate v:    v
 # ==========================================================================================================
 # ==========================================================================================================
 
@@ -85,6 +90,17 @@ for comb_i in range(len(sim_names)):
 
 xml_root.find('.//max_time').text = str(max_time*24*60) # set PhysiCell settings to use max_time
 xml_root.find('.//full_data/enable').text = full_data # set PhysiCell settings to record all data
+xml_root.find('.//full_data/interval').text = str(max_time*24*60) # set both save intervals for full data and SVGs
+xml_root.find('.//SVG/interval').text = str(max_time*24*60)
+if (scaffold == "small"): # change scaffold file and domain size according to chosen scaffold
+    xml_root.find('.//cell_positions/filename').text = "scaffold_1.csv"
+    xml_root.find(".//x_max").text = "690"
+    xml_root.find(".//y_max").text = "690"
+elif (scaffold == "large"):
+    xml_root.find('.//cell_positions/filename').text = "scaffold_large.csv"
+    xml_root.find(".//x_max").text = "1320"
+    xml_root.find(".//y_max").text = "1320"
+
 
 
 tot_time = 0
@@ -115,11 +131,15 @@ for sim_i in range(len(sim_names)): # for each simulation
         process = subprocess.Popen([exec_pgm, xml_file_out],stdout=outf)
         process.wait()
 
+    cairosvg.svg2png(url=folder_name+"\\final.svg", write_to=folder_name+"\\final.png", scale=im_scale) # convert SVG for final time to PNG
+
     tot_time += time.perf_counter() - start_time
     rem_time = tot_time/(sim_i+1)*len(sim_names) - tot_time # estimated remaining runtime based on current average runtime per simulation
     hours, remainder = divmod(rem_time, 3600)
-    minutes, _ = divmod(remainder, 60)
+    minutes = round(remainder/60, 1)
 
     print("Completed simulation " + str(sim_i+1) + " out of " + str(len(sim_names)) + ".  " + str(hours) + " hours, " + str(minutes) + " mins remaining.\n")
 
-print("All simulations completed.\n")
+hours, remainder = divmod(tot_time, 3600)
+minutes = round(remainder/60, 1)
+print("All simulations completed.  Total runtime: " + str(hours) + " hours, " + str(minutes) + " mins.\n")
