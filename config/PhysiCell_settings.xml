@@ -1,9 +1,9 @@
 <PhysiCell_settings version="devel-version">
 	<domain>
 		<x_min>-20</x_min>
-		<x_max>690</x_max> <!-- 648.14+20 by scaling micro-rods lengths to reported average 690, 1310.13 if we trust the scale bar ... 1320-->
+		<x_max>1320</x_max> <!-- 690 for small square scaffold, 1320 for large square scaffold;           648.14+20 by scaling micro-rods lengths to reported average (690), 1310.13 if we trust the scale bar (1340)-->
 		<y_min>-20</y_min>
-		<y_max>690</y_max> <!-- 648.14 by scaling micro-rods lengths to reported average 690, 1310.13 if we trust the scale bar ... 1320-->
+		<y_max>1320</y_max> <!-- 690 for small square scaffold, 1320 for large square scaffold -->
 		<z_min>-10</z_min> <!-- overwritten in custom.cpp -->
 		<z_max>10</z_max> <!-- overwritten in custom.cpp -->
 		<dx>20</dx>
@@ -13,7 +13,7 @@
 	</domain>
 	
 	<overall>
-		<max_time units="min">11520</max_time> <!-- 5 days = 7200 -->
+		<max_time units="min">5760</max_time> <!-- 4 days = 5760, 5 days = 7200, 7 days = 10080 -->
 		<time_units>min</time_units>
 		<space_units>micron</space_units>
 	
@@ -23,7 +23,7 @@
 	</overall>
 	
 	<parallel>
-		<omp_num_threads>2</omp_num_threads>
+		<omp_num_threads>12</omp_num_threads>
 	</parallel> 
 	
 	<save>
@@ -53,7 +53,7 @@
 	<microenvironment_setup>
 		<variable name="nutrient" units="dimensionless" ID="0">
         <physical_parameter_set>
-          <diffusion_coefficient units="micron^2/min">100</diffusion_coefficient> <!-- has been 1 -->
+          <diffusion_coefficient units="micron^2/min">960</diffusion_coefficient> <!-- has been 1 -->
           <decay_rate units="1/min">0.0</decay_rate>
         </physical_parameter_set>
         <initial_condition units="mmHg">0.0</initial_condition>
@@ -158,7 +158,7 @@
           <motility>
             <speed units="micron/min">1</speed>
             <persistence_time units="min">10</persistence_time>
-            <migration_bias units="dimensionless">0.6</migration_bias> <!-- was 0.6 -->
+            <migration_bias units="dimensionless">0.75</migration_bias> <!-- was 0.6 -->
             <options>
               <enabled>true</enabled>
               <use_2D>true</use_2D>
@@ -227,7 +227,7 @@
           <fibre_pushing units="none" description="flag for fibre pushing">1.0</fibre_pushing>
           <fibre_sticky units="none" description="measure of how easy it is to move a fibre">1.0</fibre_sticky> <!-- was 1.0 -->
           <fibre_rotation units="none" description="flag for fibre rotation">0.0</fibre_rotation>
-          <vel_adhesion units="" description="cell velocity parallel to fibre">1</vel_adhesion> <!-- was 0.6 -->
+          <vel_adhesion units="" description="cell velocity parallel to fibre">0.6</vel_adhesion> <!-- was 0.6 -->
           <vel_contact units="" description="cell velocity orthogonal to fibre">0.5</vel_contact> <!-- was 0.1 and 0.5 -->
           <cell_velocity_max units="" description="max cell velocity">1.0</cell_velocity_max> <!-- was 1.0-->         
           <state units="" description="activation status">0</state> <!-- was 0 -->
@@ -249,6 +249,8 @@
           <fibre_angle conserved="false" units="radians" description="angle of fibre orientation">0.0</fibre_angle>
           <angle_normdist_sd conserved="false" units="radians" description="standard deviation of fibre orientation angle">0.0</angle_normdist_sd>
           <loaded_fibres conserved="false" units="none" description="flag for whether we want anisotropic fibres">1.0</loaded_fibres>
+
+          <fibre_crosslink_counter conserved="false" units="none" description="counting cross links">0.0</fibre_crosslink_counter>
         </custom_data>
       </cell_definition>
 
@@ -405,7 +407,7 @@
 	<initial_conditions>
 		<cell_positions type="csv" enabled="true">
 			<folder>./config/Fibre_Initialisation</folder>
-			<filename>scaffold_1.csv</filename> <!-- test_scaffold   or   brynn_scaffold -->
+			<filename>scaffold_large.csv</filename> <!-- test_scaffold,  scaffold_1,  scaffold_2,  etc. -->
 		</cell_positions>
 	</initial_conditions>	
 	
